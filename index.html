@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructional Design Portfolio — Dustin J. Allen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            /* Brand palette — Personal Brand Style Guide v1.0 */
+            --cream:        #FFF8EC;
+            --cream-2:      #FFF3E0;
+            --cream-3:      #F6E9D4;
+            --ink:          #1F1A14;
+            --muted:        #5E564E;
+            --line:         #E6DCCF;
+            --purple-deep:  #3B1C55;
+            --lavender-mid: #CBB7EE;
+            --lavender-soft:#E7DFF7;
+            --periwinkle:   #90B6E8;
+            --bezier: cubic-bezier(0.23, 1, 0.32, 1);
+
+            /* Typography — Personal Brand Style Guide v1.0
+               Display: Cooper Black (system) with Playfair Display as the webfont fallback
+               Heading: Josefin Sans — nav, labels, case headers, buttons
+               Body: Segoe UI Light / Helvetica — paragraphs
+               Body-small: Helvetica — supporting text below ~14pt
+               Code: Consolas — reserved for code samples on case-study pages */
+            --font-display: 'Cooper Black', 'Playfair Display', serif;
+            --font-heading: 'Josefin Sans', sans-serif;
+            --font-body: "Segoe UI", Helvetica, Arial, sans-serif;
+            --font-body-small: Helvetica, Arial, sans-serif;
+            --font-code: Consolas, Monaco, 'Source Code Pro', monospace;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            font-weight: 300;
+            background: var(--cream);
+            color: var(--ink);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .shell { max-width: 1100px; margin: 0 auto; width: 100%; }
+
+        /* ── FOCUS STATES ── */
+        a:focus-visible, button:focus-visible {
+            outline: 3px solid var(--purple-deep);
+            outline-offset: 3px;
+            border-radius: 4px;
+        }
+
+        /* ── HEADER ── */
+        header { padding: 72px 64px 48px; }
+
+        .eyebrow {
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--purple-deep);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+            opacity: 0;
+            animation: fadeUp 0.6s var(--bezier) 0.1s both;
+        }
+        .eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--purple-deep); }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: clamp(42px, 6vw, 72px);
+            font-weight: 900;
+            line-height: 1.04;
+            letter-spacing: -0.5px;
+            color: var(--purple-deep);
+            margin-bottom: 26px;
+            opacity: 0;
+            animation: fadeUp 0.7s var(--bezier) 0.2s both;
+        }
+        h1 span {
+            display: block;
+            font-family: var(--font-heading);
+            color: var(--muted);
+            font-size: 0.42em;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            margin-top: 14px;
+        }
+
+        .lede {
+            font-family: var(--font-body);
+            font-weight: 300;
+            font-size: 18px;
+            line-height: 1.75;
+            color: var(--ink);
+            max-width: 720px;
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fadeUp 0.7s var(--bezier) 0.3s both;
+        }
+        .lede strong { font-weight: 600; }
+        .lede em { font-style: italic; font-weight: 400; }
+
+        .header-meta {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            opacity: 0;
+            animation: fadeUp 0.7s var(--bezier) 0.45s both;
+        }
+        .meta-pill {
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 100px;
+            background: var(--lavender-soft);
+            color: var(--purple-deep);
+            border: 1px solid var(--lavender-mid);
+        }
+
+        /* ── DIVIDER ── */
+        .divider { padding: 0 64px; }
+        .divider-line { width: 100%; height: 1px; background: var(--line); }
+
+        /* ── CASE STUDIES ── */
+        .work { padding: 48px 64px 88px; flex: 1; }
+
+        .section-label {
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--purple-deep);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .section-label .count { color: var(--muted); font-weight: 700; }
+
+        .section-hint {
+            font-family: var(--font-body-small);
+            font-weight: 400;
+            font-size: 14.5px;
+            color: var(--muted);
+            margin-bottom: 32px;
+        }
+
+        .case-list { display: flex; flex-direction: column; gap: 22px; }
+
+        /* ── CASE CARD (ACCORDION) ── */
+        .case-card {
+            background: var(--cream-2);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeUp 0.7s var(--bezier) both;
+        }
+        .case-card:nth-of-type(1) { animation-delay: 0.15s; }
+        .case-card:nth-of-type(2) { animation-delay: 0.28s; }
+        .case-card:nth-of-type(3) { animation-delay: 0.41s; }
+
+        .case-heading { font-size: 1em; font-weight: inherit; }
+
+        .case-toggle {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            width: 100%;
+            text-align: left;
+            padding: 28px 32px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            transition: background-color 0.25s var(--bezier), border-color 0.25s var(--bezier);
+            border-bottom: 1px solid transparent;
+        }
+        .case-toggle:hover { background-color: var(--cream-3); }
+        .case-toggle[aria-expanded="true"] {
+            background-color: var(--cream-3);
+            border-bottom-color: var(--line);
+        }
+        .case-toggle:focus-visible {
+            outline: 3px solid var(--purple-deep);
+            outline-offset: -3px;
+            border-radius: 12px;
+        }
+
+        .case-index {
+            flex-shrink: 0;
+            width: 56px;
+            font-family: var(--font-display);
+            font-size: 40px;
+            font-weight: 800;
+            line-height: 1;
+            color: var(--purple-deep);
+        }
+
+        .case-toggle-text {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .case-kicker {
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--purple-deep);
+        }
+
+        .case-title {
+            font-family: var(--font-display);
+            font-size: clamp(22px, 3vw, 28px);
+            font-weight: 800;
+            line-height: 1.15;
+            color: var(--purple-deep);
+            overflow-wrap: break-word;
+        }
+
+        .case-chevron {
+            flex-shrink: 0;
+            color: var(--purple-deep);
+            transition: transform 0.35s var(--bezier);
+        }
+        .case-toggle[aria-expanded="true"] .case-chevron { transform: rotate(180deg); }
+
+        /* ── CASE PANEL (COLLAPSIBLE) ── */
+        .case-panel {
+            max-height: 0;
+            overflow: hidden;
+            visibility: hidden;
+            transition: max-height 0.4s var(--bezier), visibility 0s 0.4s;
+        }
+        .case-panel.is-open {
+            visibility: visible;
+            transition: max-height 0.4s var(--bezier), visibility 0s;
+        }
+
+        .case-panel-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 24px 32px 32px;
+        }
+
+        .case-body {
+            font-family: var(--font-body-small);
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--muted);
+            max-width: 660px;
+        }
+
+        /* ── "WHY IT'S HERE" DISCLOSURE ── */
+        .why-disclosure { max-width: 660px; }
+
+        .why-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: 1px dashed var(--lavender-mid);
+            border-radius: 100px;
+            padding: 9px 18px;
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--purple-deep);
+            cursor: pointer;
+            transition: background-color 0.2s var(--bezier), border-color 0.2s var(--bezier), border-style 0.2s;
+        }
+        .why-toggle:hover {
+            background-color: var(--lavender-soft);
+            border-color: var(--purple-deep);
+            border-style: solid;
+        }
+        .why-toggle[aria-expanded="true"] {
+            background-color: var(--lavender-soft);
+            border-color: var(--purple-deep);
+            border-style: solid;
+        }
+
+        .why-chevron {
+            transition: transform 0.35s var(--bezier);
+        }
+        .why-toggle[aria-expanded="true"] .why-chevron { transform: rotate(180deg); }
+
+        .case-why {
+            max-height: 0;
+            overflow: hidden;
+            visibility: hidden;
+            transition: max-height 0.35s var(--bezier), visibility 0s 0.35s;
+        }
+        .case-why.is-open {
+            visibility: visible;
+            transition: max-height 0.35s var(--bezier), visibility 0s;
+        }
+
+        .case-why-text {
+            font-family: var(--font-body-small);
+            font-weight: 400;
+            font-size: 14.5px;
+            line-height: 1.55;
+            color: var(--ink);
+            background: var(--lavender-soft);
+            border-left: 3px solid var(--lavender-mid);
+            border-radius: 0 8px 8px 0;
+            padding: 13px 18px;
+            margin-top: 12px;
+        }
+
+        /* ── CASE BUTTON ── */
+        .case-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            align-self: flex-start;
+            background-color: var(--purple-deep);
+            color: var(--cream);
+            padding: 13px 26px;
+            border-radius: 7px;
+            font-family: var(--font-heading);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: background-color 0.3s var(--bezier), color 0.3s var(--bezier), transform 0.3s var(--bezier), box-shadow 0.3s var(--bezier);
+            box-shadow: 0 6px 18px rgba(59, 28, 85, 0.14);
+        }
+        .case-btn .arrow { transition: transform 0.3s var(--bezier); }
+        .case-btn:hover {
+            background-color: var(--lavender-mid);
+            color: var(--purple-deep);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 26px rgba(59, 28, 85, 0.22);
+        }
+        .case-btn:hover .arrow { transform: translateX(4px); }
+
+        /* ── FOOTER ── */
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 28px 64px;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .footer-name {
+            font-family: var(--font-display);
+            font-size: 15px;
+            color: var(--purple-deep);
+            opacity: 0.7;
+        }
+        .footer-link {
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--purple-deep);
+            text-decoration: underline;
+            text-decoration-color: var(--periwinkle);
+            text-decoration-thickness: 2px;
+            text-underline-offset: 4px;
+            transition: text-decoration-color 0.2s var(--bezier);
+        }
+        .footer-link:hover, .footer-link:focus-visible { text-decoration-color: var(--purple-deep); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 48px 24px 36px; }
+            .divider { padding: 0 24px; }
+            .work { padding: 36px 24px 64px; }
+            footer { padding: 24px; }
+
+            .case-toggle { padding: 22px 20px; gap: 16px; }
+            .case-panel-inner { padding: 18px 20px 24px; }
+            .case-index { width: 40px; font-size: 30px; }
+            .case-title { font-size: 20px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+    </style>
+    <noscript>
+        <style>
+            /* Without JS, show every panel open and hide the (non-functional) chevrons */
+            .case-panel, .case-why { max-height: none !important; visibility: visible !important; overflow: visible !important; }
+            .case-chevron, .why-chevron { display: none; }
+            .case-toggle, .why-toggle { cursor: default; }
+        </style>
+    </noscript>
+</head>
+<body>
+
+    <header class="shell">
+        <div class="eyebrow">Dustin J. Allen · Instructional Design Portfolio</div>
+        <h1>Learning, built to be used.<span>Three case studies in instructional design.</span></h1>
+
+        <p class="lede">
+            I design learning experiences that hold up in the real conditions people work in — tight budgets, no LMS, conflicting stakeholder demands, not enough time. Across these three pieces the question is the same: when training doesn't change what someone does afterward, the gap usually isn't what they know, it's what they can <em>do</em> under real conditions. So I build for <strong>application and judgment over recall</strong>, and try to leave a way to see whether it actually transferred.
+        </p>
+        <p class="lede">
+            Each case study below is self-contained — a short write-up of the problem, the constraints, and the choices I made, followed by a live artifact you can work through yourself.
+        </p>
+
+        <div class="header-meta">
+            <span class="meta-pill">Instructional Design</span>
+            <span class="meta-pill">eLearning</span>
+            <span class="meta-pill">Needs Analysis</span>
+            <span class="meta-pill">Articulate Storyline &amp; Rise</span>
+            <span class="meta-pill">HTML / CSS / JS</span>
+        </div>
+    </header>
+
+    <div class="divider shell"><div class="divider-line"></div></div>
+
+    <main class="work shell">
+        <h2 class="section-label">Case Studies <span class="count">01 — 03</span></h2>
+        <p class="section-hint">Select a case study to read the write-up, then open its live artifact.</p>
+
+        <div class="case-list">
+
+            <!-- 01 — Art of Hinting -->
+            <div class="case-card">
+                <h3 class="case-heading">
+                    <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-panel-01" id="case-toggle-01">
+                        <span class="case-index" aria-hidden="true">01</span>
+                        <span class="case-toggle-text">
+                            <span class="case-kicker">Secret City Adventures · Staff Training</span>
+                            <span class="case-title">The Art of Hinting</span>
+                        </span>
+                        <svg class="case-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </h3>
+                <div class="case-panel" id="case-panel-01" role="region" aria-labelledby="case-toggle-01">
+                    <div class="case-panel-inner">
+                        <p class="case-body">
+                            As the departing head trainer at an escape-room company, I built a complete training program for a workplace with no documentation, no computers on the floor, and no LMS or authoring budget. After a needs-assessment interview with the senior manager, I designed mobile-first in Articulate, then rebuilt it as a custom HTML/CSS/JS site staff could run from their phones — closing with a scenario assessment where the right call shifts depending on how much time is left on the clock.
+                        </p>
+                        <div class="why-disclosure">
+                            <button class="why-toggle" type="button" aria-expanded="false" aria-controls="case-why-01" id="why-toggle-01">
+                                <span>Why it's in this portfolio</span>
+                                <svg class="why-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <div class="case-why" id="case-why-01">
+                                <p class="case-why-text">No documentation, no LMS, no computers on the floor — built from the ground up after a single needs-assessment conversation, ending in an assessment that trains real-time judgment under pressure, not memorized steps.</p>
+                            </div>
+                        </div>
+                        <a class="case-btn" href="art-of-hinting.html">View case study <span class="arrow">→</span></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 02 — Advisor Academy -->
+            <div class="case-card">
+                <h3 class="case-heading">
+                    <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-panel-02" id="case-toggle-02">
+                        <span class="case-index" aria-hidden="true">02</span>
+                        <span class="case-toggle-text">
+                            <span class="case-kicker">Optimize Financial Group · Advisor Academy</span>
+                            <span class="case-title">Passive Video to Hands-On Practice</span>
+                        </span>
+                        <svg class="case-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </h3>
+                <div class="case-panel" id="case-panel-02" role="region" aria-labelledby="case-toggle-02">
+                    <div class="case-panel-inner">
+                        <p class="case-body">
+                            Two onboarding topics — a provincial sales-tax map and redacting personal information — were once buried as passing mentions inside twelve hours of video and multiple-choice tests, even though the support team flagged them as major blockers during advisor transitions. I rebuilt them as interactive activities that make the learner actually perform the task, so it's internalized rather than watched. These two are a representative slice of a full academy overhaul.
+                        </p>
+                        <div class="why-disclosure">
+                            <button class="why-toggle" type="button" aria-expanded="false" aria-controls="case-why-02" id="why-toggle-02">
+                                <span>Why it's in this portfolio</span>
+                                <svg class="why-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <div class="case-why" id="case-why-02">
+                                <p class="case-why-text">Two topics advisors could recite but not perform, rebuilt so they have to do the task — one slice of an academy overhaul aimed at advisors actually doing things differently, not just finishing modules.</p>
+                            </div>
+                        </div>
+                        <a class="case-btn" href="advisor-academy.html">View case study <span class="arrow">→</span></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 03 — Call Simulator -->
+            <div class="case-card">
+                <h3 class="case-heading">
+                    <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-panel-03" id="case-toggle-03">
+                        <span class="case-index" aria-hidden="true">03</span>
+                        <span class="case-toggle-text">
+                            <span class="case-kicker">Optimize Financial Group · Business Development</span>
+                            <span class="case-title">The Call Simulator</span>
+                        </span>
+                        <svg class="case-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </h3>
+                <div class="case-panel" id="case-panel-03" role="region" aria-labelledby="case-toggle-03">
+                    <div class="case-panel-inner">
+                        <p class="case-body">
+                            A branching call simulation for entry-level business-development staff: a scrolling teleprompter, live data capture, and objection-handling decision points that score the learner's judgment. The prompter format anticipates the longer consultative calls of the senior role they're working toward, while the scenario itself — handling objections, capturing information accurately, and separating signal from noise in follow-up notes — is core to the job they're in today.
+                        </p>
+                        <div class="why-disclosure">
+                            <button class="why-toggle" type="button" aria-expanded="false" aria-controls="case-why-03" id="why-toggle-03">
+                                <span>Why it's in this portfolio</span>
+                                <svg class="why-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <div class="case-why" id="case-why-03">
+                                <p class="case-why-text">Branching scenario design that scaffolds judgment under pressure — built for the role staff are in now, and the one many of them are working toward.</p>
+                            </div>
+                        </div>
+                        <a class="case-btn" href="call-simulation.html">View case study <span class="arrow">→</span></a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <span class="footer-name">Dustin J. Allen</span>
+        <a class="footer-link" href="https://dustinjallenwriter.com/portfolio">Full Portfolio →</a>
+    </footer>
+
+    <script>
+        (function () {
+            function openPanel(panel) {
+                panel.classList.add('is-open');
+                panel.style.maxHeight = '0px';
+                requestAnimationFrame(function () {
+                    panel.style.maxHeight = panel.scrollHeight + 'px';
+                });
+            }
+
+            function closePanel(panel) {
+                panel.style.maxHeight = panel.scrollHeight + 'px';
+                panel.classList.remove('is-open');
+                requestAnimationFrame(function () {
+                    panel.style.maxHeight = '0px';
+                });
+            }
+
+            // Once an "open" panel finishes growing, let it size naturally —
+            // this matters so a nested disclosure (the "why" box) can expand
+            // without being clipped by its parent's fixed max-height.
+            function settle(event) {
+                if (event.propertyName !== 'max-height') return;
+                var panel = event.currentTarget;
+                if (panel.classList.contains('is-open')) {
+                    panel.style.maxHeight = 'none';
+                }
+            }
+
+            function wireDisclosure(button, panel) {
+                panel.addEventListener('transitionend', settle);
+                button.addEventListener('click', function () {
+                    var expanded = button.getAttribute('aria-expanded') === 'true';
+                    button.setAttribute('aria-expanded', String(!expanded));
+                    if (expanded) {
+                        closePanel(panel);
+                    } else {
+                        openPanel(panel);
+                    }
+                });
+            }
+
+            document.querySelectorAll('.case-card').forEach(function (card) {
+                wireDisclosure(card.querySelector('.case-toggle'), card.querySelector('.case-panel'));
+                wireDisclosure(card.querySelector('.why-toggle'), card.querySelector('.case-why'));
+            });
+        })();
+    </script>
+
+</body>
+</html>

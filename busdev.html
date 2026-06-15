@@ -1,1 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outreach Framework - Section Intro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- REQUIRED CSS RESET --- */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html {
+            font-size: 15px; /* Compact layout scaling baseline */
+        }
+        :root {
+            --navy: #2C3B4E;
+            --navy-deep: #1E2A38;
+            --teal: #5E8081;
+            --teal-dark: #283B3C;   /* WCAG AAA Pass text contrast */
+            --brown: #AE5605;
+            --brown-dark: #703502;
+            --border-grey: #CBD5E1;
+            --white-sub: #FDFCF7;
+            --off-white: #FDFCF7;
+            --grey-dark: #475569;
+            --bezier: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--off-white);
+            color: var(--navy);
+            display: flex;
+            justify-content: center;
+            padding: 2.5rem 1.5rem;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+        .container { width: 100%; max-width: 53.125rem; display: flex; flex-direction: column; gap: 1.25rem; }
 
+        /* --- PORTFOLIO CONTEXT BANNER (only non-Optimize chrome on the page) --- */
+        .context-note {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--grey-dark);
+            background: rgba(94, 128, 129, 0.07);
+            border: 1px dashed var(--teal);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+        }
+        .context-note svg { width: 1rem; height: 1rem; stroke-width: 2.2; color: var(--teal-dark); flex-shrink: 0; }
+        .context-note a { color: var(--teal-dark); font-weight: 800; text-decoration: underline; text-underline-offset: 2px; }
+
+        /* --- UNIFIED INTRO CARD --- */
+        .intro-card {
+            background: var(--white-sub);
+            border: 1px solid rgba(203, 213, 225, 0.6);
+            border-radius: 1rem;
+            padding: 2.75rem 3rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 32px rgba(44, 59, 78, 0.03);
+        }
+        /* Top Brand Border Treatment */
+        .intro-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 0.375rem;
+            background: linear-gradient(90deg, var(--teal), var(--brown));
+        }
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--teal-dark);
+            margin-bottom: 1.25rem;
+        }
+        .section-label::before { content: ''; width: 1rem; height: 2px; background: var(--teal-dark); }
+        .intro-card h1 {
+            font-size: 1.875rem;
+            font-weight: 900;
+            line-height: 1.2;
+            color: var(--navy-deep);
+            margin-bottom: 1.25rem;
+            letter-spacing: -0.5px;
+        }
+
+        /* Isolated Specificity Safeguard Class for descriptive paragraph text */
+        .intro-card .card-body-text {
+            font-size: 1.0625rem;
+            font-weight: 500;
+            color: var(--navy-deep) !important;
+            margin-bottom: 1rem;
+        }
+        .intro-card .card-body-text:last-child { margin-bottom: 0; }
+
+        /* --- CONTINUE BUTTON (Optimize style) --- */
+        .continue-row { display: flex; justify-content: flex-end; }
+        .continue-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--navy); color: var(--white-sub);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.875rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+            padding: 0.875rem 1.75rem; border-radius: 0.5rem; text-decoration: none;
+            transition: all 0.2s var(--bezier); box-shadow: 0 4px 12px rgba(44,59,78,0.12);
+        }
+        .continue-btn:hover { background: var(--navy-deep); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .continue-btn:focus-visible { outline: 3px solid var(--brown-dark); outline-offset: 3px; }
+        .continue-btn svg { transition: transform 0.2s var(--bezier); }
+        .continue-btn:hover svg { transform: translateX(3px); }
+
+        @media (max-width: 640px) {
+            .intro-card { padding: 2rem 1.25rem; }
+            .intro-card h1 { font-size: 1.5rem; }
+            .continue-row { justify-content: stretch; }
+            .continue-btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="context-note" role="note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>Portfolio note: these screens are shown in <strong>Optimize's internal style guide</strong> (navy / teal / Montserrat), not the portfolio brand &mdash; this is the system the live training was built in. <a href="index.html">Back to case studies</a></span>
+    </div>
+
+    <article class="intro-card" aria-labelledby="intro-title">
+
+        <header>
+            <span class="section-label">BDR Onboarding</span>
+            <h1 id="intro-title">Calling Scripts &amp; Scenarios</h1>
+        </header>
+        <main>
+            <p class="card-body-text">The following scripts provide structured approaches for different calling scenarios. Throughout the training process, you'll internalize these scripts so that delivering them accurately comes off as natural and persuasive.</p>
+            <p class="card-body-text">As scripted conversations turn into organic ones, you'll rely on your judgment to adapt language while maintaining the core messaging and driving toward booking the Intro Meeting.</p>
+        </main>
+    </article>
+
+    <div class="continue-row">
+        <a class="continue-btn" href="busdev2.html">Continue: Strategy Guide <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+
+</div>
+</body>
+</html>

@@ -483,7 +483,6 @@
                         <p class="case-body">
                             As the departing head trainer at an immersive theatrical escape room company, I built a complete training program for a workplace with no documentation, no computers on the floor, and no LMS. After a needs-assessment interview with the senior manager, I designed a prototype in Articulate, then rebuilt it as a mobile-first HTML/CSS/JS site staff could run from their phones — closing with a scenario assessment where the right call shifts depending on how much time is left on the clock.
                         </p>
-                        <div class="why-disclosure">
                         <a class="case-btn" href="secretcity.html">View case study <span class="arrow">→</span></a>
                     </div>
                 </div>
@@ -508,7 +507,6 @@
                         <p class="case-body">
                             Two onboarding topics — a provincial sales-tax map and redacting personal information — were once buried as passing mentions inside twelve hours of video and multiple-choice tests, even though the support team flagged them as major blockers during advisor transitions. In the course of replacing the video-based academy, I rebuilt hundreds of lessons as interactive activities that allow the learner to actually perform or simulate the task, or otherwise internalize an abstract concept. These two examples represent a full academy overhaul.
                         </p>
-                
                         <a class="case-btn" href="advisor1.html">View case study <span class="arrow">→</span></a>
                     </div>
                 </div>
@@ -533,8 +531,6 @@
                         <p class="case-body">
                             A branching call simulation for entry-level business-development staff: a scrolling teleprompter, live data capture, and objection-handling decision points that score the learner's judgment. The prompter format anticipates the longer consultative calls of the senior role they're working toward, while the scenario itself — handling objections, capturing information accurately, and separating signal from noise in follow-up notes — is core to the job they're in today.
                         </p>
-                        <div class="why-disclosure">
- 
                         <a class="case-btn" href="busdev.html">View case study <span class="arrow">→</span></a>
                     </div>
                 </div>
@@ -566,10 +562,9 @@
                 });
             }
 
-            // Once an "open" panel finishes growing, let it size naturally —
-            // this matters so a nested disclosure (the "why" box) can expand
-            // without being clipped by its parent's fixed max-height.
+            // Once an "open" panel finishes growing, let it size naturally.
             function settle(event) {
+                if (event.target !== event.currentTarget) return;
                 if (event.propertyName !== 'max-height') return;
                 var panel = event.currentTarget;
                 if (panel.classList.contains('is-open')) {
@@ -578,6 +573,7 @@
             }
 
             function wireDisclosure(button, panel) {
+                if (!button || !panel) return;
                 panel.addEventListener('transitionend', settle);
                 button.addEventListener('click', function () {
                     var expanded = button.getAttribute('aria-expanded') === 'true';

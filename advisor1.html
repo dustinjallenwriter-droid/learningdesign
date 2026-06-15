@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Tax Overview — Advisor Academy</title>
+    <title>Passive Video to Hands-On Practice — Advisor Academy</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
@@ -24,7 +24,8 @@
         .shell { max-width: 900px; margin: 0 auto; width: 100%; }
         a:focus-visible, button:focus-visible { outline: 3px solid var(--purple-deep); outline-offset: 3px; border-radius: 4px; }
 
-        header { padding: 56px 64px 24px; }
+        /* ── Shared header styles ── */
+        .page-header { padding: 56px 64px 24px; }
         .back-link { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--purple-deep); text-decoration: underline; text-decoration-color: var(--periwinkle); text-decoration-thickness: 2px; text-underline-offset: 4px; margin-bottom: 28px; opacity: 0; animation: fadeUp .6s var(--bezier) 0s both; }
         .back-link:hover, .back-link:focus-visible { text-decoration-color: var(--purple-deep); }
         .eyebrow { font-family: var(--font-heading); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: var(--purple-deep); display: flex; align-items: center; gap: 12px; margin-bottom: 18px; opacity: 0; animation: fadeUp .6s var(--bezier) .1s both; }
@@ -33,7 +34,49 @@
         h1 span { display: block; font-family: var(--font-heading); color: var(--muted); font-size: 0.42em; font-weight: 700; margin-top: 10px; }
         .lede { font-size: 17px; line-height: 1.7; max-width: 680px; opacity: 0; animation: fadeUp .7s var(--bezier) .3s both; }
 
-        main { padding: 8px 64px 48px; flex: 1; }
+        /* ── Shared footer ── */
+        footer { border-top: 1px solid var(--line); padding: 28px 64px; max-width: 900px; margin: 40px auto 0; width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .footer-name { font-family: var(--font-display); font-size: 15px; color: var(--purple-deep); opacity: .7; }
+        .footer-link { font-family: var(--font-heading); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--purple-deep); text-decoration: underline; text-decoration-color: var(--periwinkle); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+        .footer-link:hover { text-decoration-color: var(--purple-deep); }
+
+        /* ── Shared button ── */
+        .case-btn { display: inline-flex; align-items: center; gap: 9px; background-color: var(--purple-deep); color: var(--cream); padding: 14px 32px; border-radius: 7px; font-family: var(--font-heading); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; transition: all .3s var(--bezier); box-shadow: 0 6px 18px rgba(59,28,85,.14); cursor: pointer; border: none; }
+        .case-btn:hover { background-color: var(--lavender-mid); color: var(--purple-deep); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(59,28,85,.22); }
+        .case-btn .arrow { transition: transform .3s var(--bezier); }
+        .case-btn:hover .arrow { transform: translateX(4px); }
+        .continue-row { display: flex; justify-content: center; margin-top: 40px; }
+
+        /* ── VIEW SWITCHING ── */
+        .view { display: none; flex-direction: column; flex: 1; }
+        .view.active { display: flex; }
+
+        /* ── INTRO VIEW ── */
+        #view-intro main { padding: 8px 64px 48px; flex: 1; }
+
+        .prose { max-width: 680px; }
+        .prose p { font-size: 17px; line-height: 1.8; color: var(--ink); margin-bottom: 20px; }
+        .prose p:last-child { margin-bottom: 0; }
+
+        .section-label { font-family: var(--font-heading); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2.5px; color: var(--purple-deep); margin-bottom: 16px; margin-top: 40px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+        .section-label:first-child { margin-top: 0; }
+
+        .constraint-list { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-bottom: 0; }
+        .constraint-list li { display: flex; align-items: flex-start; gap: 14px; font-size: 16px; line-height: 1.7; color: var(--ink); }
+        .constraint-list li::before { content: ''; flex-shrink: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--lavender-mid); margin-top: 10px; }
+
+        .artifact-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 4px; }
+        .artifact-card { background: var(--cream-2); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px; }
+        .artifact-card-label { font-family: var(--font-heading); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--purple-deep); }
+        .artifact-card-title { font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: var(--ink); }
+        .artifact-card-desc { font-size: 14px; line-height: 1.6; color: var(--muted); }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+        .tag { font-family: var(--font-heading); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--purple-deep); background: var(--lavender-soft); border: 1px solid var(--lavender-mid); border-radius: 4px; padding: 4px 10px; }
+
+        /* ── ARTIFACT VIEW ── */
+        #view-artifact .artifact-header { padding: 56px 64px 24px; }
+        #view-artifact main { padding: 8px 64px 48px; flex: 1; }
 
         .region-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 18px; margin: 28px 0; }
         .region-card { background: var(--cream-2); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 10px; transition: transform .3s var(--bezier), border-color .3s; }
@@ -50,24 +93,22 @@
         .tip-text { font-size: 16px; line-height: 1.7; color: var(--ink); }
         .tip-text strong { font-weight: 600; }
 
-        .continue-row { display: flex; justify-content: center; margin-top: 40px; }
-        .case-btn { display: inline-flex; align-items: center; gap: 9px; background-color: var(--purple-deep); color: var(--cream); padding: 14px 32px; border-radius: 7px; font-family: var(--font-heading); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; transition: all .3s var(--bezier); box-shadow: 0 6px 18px rgba(59,28,85,.14); }
-        .case-btn:hover { background-color: var(--lavender-mid); color: var(--purple-deep); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(59,28,85,.22); }
-        .case-btn .arrow { transition: transform .3s var(--bezier); }
-        .case-btn:hover .arrow { transform: translateX(4px); }
-
-        footer { border-top: 1px solid var(--line); padding: 28px 64px; max-width: 900px; margin: 40px auto 0; width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
-        .footer-name { font-family: var(--font-display); font-size: 15px; color: var(--purple-deep); opacity: .7; }
-        .footer-link { font-family: var(--font-heading); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--purple-deep); text-decoration: underline; text-decoration-color: var(--periwinkle); text-decoration-thickness: 2px; text-underline-offset: 4px; }
-        .footer-link:hover { text-decoration-color: var(--purple-deep); }
+        /* ── Artifact eyebrow (no animation — revealed after swap) ── */
+        .artifact-eyebrow { font-family: var(--font-heading); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: var(--purple-deep); display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .artifact-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--purple-deep); }
+        .artifact-h1 { font-family: var(--font-display); font-size: clamp(30px, 4.5vw, 46px); font-weight: 900; line-height: 1.1; letter-spacing: -0.5px; color: var(--purple-deep); margin-bottom: 14px; }
+        .artifact-h1 span { display: block; font-family: var(--font-heading); color: var(--muted); font-size: 0.42em; font-weight: 700; margin-top: 10px; }
+        .artifact-lede { font-size: 17px; line-height: 1.7; max-width: 680px; }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .fade-in { animation: fadeIn .4s var(--bezier) both; }
 
         @media (max-width: 768px) {
-            header { padding: 40px 24px 16px; }
-            main { padding: 8px 24px 32px; }
+            .page-header, #view-artifact .artifact-header { padding: 40px 24px 16px; }
+            #view-intro main, #view-artifact main { padding: 8px 24px 32px; }
             footer { padding: 24px; }
-            .region-grid { grid-template-columns: 1fr; }
+            .region-grid, .artifact-pair { grid-template-columns: 1fr; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
@@ -77,60 +118,148 @@
 </head>
 <body>
 
-    <header class="shell">
-        <a class="back-link" href="advisor-academy.html">← Advisor Academy</a>
-        <div class="eyebrow">Advisor Academy · Exercise 1 of 4</div>
-        <h1>Sales Tax Overview<span>HST, GST, and PST — what flows through to you</span></h1>
-        <p class="lede">Optimize collects sales tax on applicable revenue and flows the appropriate portion through to advisors on a prorated basis.</p>
-    </header>
+    <!-- ═══════════════════════════════════════════
+         VIEW 1: CASE STUDY INTRO
+    ════════════════════════════════════════════ -->
+    <div id="view-intro" class="view active">
+        <header class="page-header shell">
+            <a class="back-link" href="index.html">← All Case Studies</a>
+            <div class="eyebrow">Case Study 02 / 03 · Optimize Financial Group · Advisor Academy</div>
+            <h1>Passive Video to Hands-On Practice<span>Replacing twelve hours of video with activities that match the actual work</span></h1>
+            <p class="lede">A needs analysis surfaced two categories of knowledge gap causing avoidable compliance errors — and made the case to overhaul how new advisors learned.</p>
+        </header>
 
-    <main class="shell">
-        <div class="region-grid">
-            <div class="region-card">
-                <div class="region-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                </div>
-                <div class="region-title">HST Provinces</div>
-                <div class="region-desc">In Ontario, New Brunswick, Newfoundland and Labrador, Nova Scotia, and Prince Edward Island, HST is collected and passed through.</div>
+        <main class="shell">
+
+            <div class="tags">
+                <span class="tag">Needs Analysis</span>
+                <span class="tag">Curriculum Design</span>
+                <span class="tag">Articulate Rise</span>
+                <span class="tag">HTML / CSS / JS</span>
+                <span class="tag">SCORM</span>
             </div>
 
-            <div class="region-card">
-                <div class="region-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
-                        <line x1="8" y1="2" x2="8" y2="18"></line>
-                        <line x1="16" y1="6" x2="16" y2="22"></line>
-                    </svg>
-                </div>
-                <div class="region-title">Non-Harmonized Provinces</div>
-                <div class="region-desc">In non-harmonized provinces, GST (and PST where applicable) is handled instead.</div>
+            <p class="section-label" style="margin-top: 36px;">The Problem</p>
+            <div class="prose">
+                <p>When I joined Optimize, new advisors onboarded through twelve hours of video — AI-generated scripts, AI-generated captions — followed by multiple-choice comprehension tests. There was no simulation of real tasks, no practice with the tools and documents advisors would use daily, and no mechanism to verify that knowledge had transferred before someone started making client submissions.</p>
+                <p>Shortly after being hired, I sat down with the support team to understand where new advisors were struggling most. Two patterns came up immediately: advisors didn't understand how sales tax law applied across provinces — many had clients outside Ontario but couldn't navigate the HST, GST, and PST distinctions — and advisors were mishandling personally identifying information in client documents they submitted through various applications. Both gaps were causing avoidable backlogs. Both had been present in the video content as passing mentions.</p>
             </div>
-        </div>
 
-        <div class="tip-box">
-            <span class="tip-label">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-                Important Reminder
-            </span>
-            <p class="tip-text">The sales tax that flows to you is <strong>not yours to keep</strong>. You're required to remit it to the CRA (and provincial tax authorities where applicable). This is where your HST number comes in.</p>
-        </div>
+            <p class="section-label">The Constraints</p>
+            <ul class="constraint-list">
+                <li>The existing program was entirely passive — no interactivity, no task simulation, no formative assessment beyond multiple-choice recall.</li>
+                <li>No authoring tools were licensed at the time. Replacing the academy meant first making the business case to purchase Articulate 360.</li>
+                <li>Effectiveness had never been formally tracked. Any new approach needed a measurable baseline to compare against.</li>
+            </ul>
 
-        <div class="continue-row">
-            <a class="case-btn" href="advisor2.html">Test Your Knowledge <span class="arrow">→</span></a>
-        </div>
-    </main>
+            <p class="section-label">The Approach</p>
+            <div class="prose">
+                <p>I presented the business case for Articulate 360, with the core argument that Rise's interactive block types and the ability to publish to SCORM would let us build activities that replicated what advisors actually do — not just describe it. The purchase was approved.</p>
+                <p>For tracking, I established support ticket volume from new advisors on PII and tax-related issues as the primary effectiveness metric, supplemented by error rates on submissions flagged by the support team. That gave us a pre-intervention baseline to measure against once the new modules went live.</p>
+                <p>For the two knowledge gaps specifically, the design choice was to match the format of the activity to the format of the real task. Tax policy is a reference problem — advisors need to look it up and apply it — so the learning activity is structured the same way: information presented as a reference map, then a check on whether they can apply it. PII handling is a perceptual task — you have to recognize what to redact and what to leave — so the activity puts a real document in front of the learner and asks them to do it.</p>
+            </div>
 
-    <footer>
-        <span class="footer-name">Dustin J. Allen</span>
-        <a class="footer-link" href="index.html">All Case Studies →</a>
-    </footer>
+            <p class="section-label">What You're About to See</p>
+            <div class="artifact-pair">
+                <div class="artifact-card">
+                    <div class="artifact-card-label">Exercise 1 – 2 of 4</div>
+                    <div class="artifact-card-title">Sales Tax Overview + Knowledge Check</div>
+                    <div class="artifact-card-desc">A provincial tax reference followed by an application exercise — identifying the correct tax treatment for advisors in different provinces.</div>
+                </div>
+                <div class="artifact-card">
+                    <div class="artifact-card-label">Exercise 3 – 4 of 4</div>
+                    <div class="artifact-card-title">Privacy Protocol + Redaction Check</div>
+                    <div class="artifact-card-desc">A demonstration of the PII redaction standard applied to a sample client statement, followed by a hands-on exercise where the learner applies it.</div>
+                </div>
+            </div>
+
+            <div class="continue-row">
+                <button class="case-btn" onclick="showArtifact()">Enter the Module <span class="arrow">→</span></button>
+            </div>
+        </main>
+
+        <footer>
+            <span class="footer-name">Dustin J. Allen</span>
+            <a class="footer-link" href="index.html">All Case Studies →</a>
+        </footer>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         VIEW 2: THE ARTIFACT (existing content)
+    ════════════════════════════════════════════ -->
+    <div id="view-artifact" class="view">
+        <header class="artifact-header shell">
+            <a class="back-link" href="#" onclick="showIntro(); return false;" style="opacity:1; animation: none;">← Case Study</a>
+            <div class="artifact-eyebrow">Advisor Academy · Exercise 1 of 4</div>
+            <h1 class="artifact-h1">Sales Tax Overview<span>HST, GST, and PST — what flows through to you</span></h1>
+            <p class="artifact-lede">Optimize collects sales tax on applicable revenue and flows the appropriate portion through to advisors on a prorated basis.</p>
+        </header>
+
+        <main class="shell">
+            <div class="region-grid">
+                <div class="region-card">
+                    <div class="region-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </div>
+                    <div class="region-title">HST Provinces</div>
+                    <div class="region-desc">In Ontario, New Brunswick, Newfoundland and Labrador, Nova Scotia, and Prince Edward Island, HST is collected and passed through.</div>
+                </div>
+
+                <div class="region-card">
+                    <div class="region-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                            <line x1="8" y1="2" x2="8" y2="18"></line>
+                            <line x1="16" y1="6" x2="16" y2="22"></line>
+                        </svg>
+                    </div>
+                    <div class="region-title">Non-Harmonized Provinces</div>
+                    <div class="region-desc">In non-harmonized provinces, GST (and PST where applicable) is handled instead.</div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <span class="tip-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Important Reminder
+                </span>
+                <p class="tip-text">The sales tax that flows to you is <strong>not yours to keep</strong>. You're required to remit it to the CRA (and provincial tax authorities where applicable). This is where your HST number comes in.</p>
+            </div>
+
+            <div class="continue-row">
+                <a class="case-btn" href="advisor2.html">Test Your Knowledge <span class="arrow">→</span></a>
+            </div>
+        </main>
+
+        <footer>
+            <span class="footer-name">Dustin J. Allen</span>
+            <a class="footer-link" href="index.html">All Case Studies →</a>
+        </footer>
+    </div>
+
+    <script>
+        function showArtifact() {
+            document.getElementById('view-intro').classList.remove('active');
+            const artifact = document.getElementById('view-artifact');
+            artifact.classList.add('active');
+            artifact.classList.add('fade-in');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showIntro() {
+            document.getElementById('view-artifact').classList.remove('active');
+            document.getElementById('view-artifact').classList.remove('fade-in');
+            document.getElementById('view-intro').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 
 </body>
 </html>

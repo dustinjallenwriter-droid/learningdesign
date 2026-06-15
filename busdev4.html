@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Call Simulation Assessment - Optimize OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        button, input { font-family: inherit; font-size: inherit; font-weight: inherit; color: inherit; line-height: inherit; background: none; border: none; outline: none; }
+
+        html { font-size: 15px; }
+
+        :root {
+            --navy: #2C3B4E;
+            --navy-deep: #1E2A38;
+            --teal: #5E8081;
+            --teal-dark: #233637;
+            --teal-bright: #A5D1D2;
+            --teal-light: rgba(94, 128, 129, 0.08);
+            --brown: #AE5605;
+            --brown-dark: #703502;
+            --brown-light: rgba(174, 86, 5, 0.08);
+            --border-grey: #CBD5E1;
+            --white-sub: #FDFCF7;
+            --off-white: #F3F2EB;
+            --grey-dark: #475569;
+            --green-success: #2E7D32;
+            --red-error: #C62828;
+            --bezier: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--off-white);
+            color: var(--navy);
+            padding: 2rem 1.5rem;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        .workspace-layout {
+            width: 100%;
+            max-width: 68rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+
+        .console-header {
+            grid-column: span 2;
+            background: var(--white-sub);
+            border: 1px solid var(--border-grey);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+        }
+
+        .console-meta h1 { font-size: 1.35rem; font-weight: 900; color: var(--navy-deep); letter-spacing: -0.3px; }
+        .console-meta p { font-size: 0.875rem; font-weight: 600; color: var(--grey-dark); }
+
+        .teleprompter-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--off-white);
+            padding: 0.375rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border-grey);
+        }
+
+        .control-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 1.5rem;
+            font-size: 0.8125rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--grey-dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .control-btn:hover { color: var(--navy-deep); background: rgba(0,0,0,0.04); }
+        .control-btn:focus-visible { outline: 3px solid var(--brown-dark); }
+        .control-btn.is-active { background: var(--navy); color: var(--white-sub); }
+
+        .speed-select {
+            font-size: 0.8125rem; font-weight: 800; padding: 0.5rem 0.75rem;
+            border-radius: 1.5rem; background: transparent; border: none; color: var(--grey-dark); cursor: pointer;
+        }
+        .speed-select:focus-visible { outline: 3px solid var(--brown-dark); }
+
+        .teleprompter-viewport {
+            background: var(--white-sub);
+            border: 1px solid var(--border-grey);
+            border-radius: 0.75rem;
+            height: 36rem;
+            overflow-y: auto;
+            padding: 2rem;
+            scroll-behavior: smooth;
+            position: relative;
+        }
+
+        .script-track { display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 8rem; }
+
+        .speech-node {
+            display: flex; flex-direction: column; gap: 0.375rem;
+            padding-left: 1.25rem; border-left: 3px solid var(--border-grey);
+            transition: all 0.3s ease;
+            animation: nodeSlideIn 0.4s var(--bezier) both;
+        }
+
+        .speech-speaker { font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        .speech-bubble { font-size: 1.0625rem; font-weight: 500; }
+
+        .speech-node.bdr-turn { border-color: var(--teal); }
+        .speech-node.bdr-turn .speech-speaker { color: var(--teal-dark); }
+        .speech-node.bdr-turn .speech-bubble { color: var(--navy-deep); font-weight: 600; }
+
+        .speech-node.advisor-turn { border-color: var(--grey-dark); }
+        .speech-node.advisor-turn .speech-speaker { color: var(--grey-dark); }
+        .speech-node.advisor-turn .speech-bubble { color: var(--navy); font-style: italic; }
+
+        .speech-node.listening-active {
+            background: var(--teal-light);
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            border-left-width: 5px;
+        }
+
+        .junction-container {
+            background: var(--off-white);
+            border: 1px solid var(--border-grey);
+            border-radius: 0.625rem;
+            padding: 1.5rem;
+            margin: 0.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            animation: nodeSlideIn 0.4s var(--bezier) both;
+        }
+
+        .junction-title {
+            font-size: 0.8125rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--brown-dark);
+        }
+
+        .choice-btn-stack { display: flex; flex-direction: column; gap: 0.75rem; }
+
+        .choice-row-button {
+            width: 100%; padding: 1rem 1.25rem; background: #FFFFFF;
+            border: 2px solid var(--border-grey); border-radius: 0.5rem;
+            display: flex; gap: 1rem; align-items: flex-start;
+            transition: all 0.2s ease; cursor: pointer;
+        }
+        .choice-row-button:hover { border-color: var(--teal); background: var(--white-sub); }
+        .choice-row-button:focus-visible { outline: 3px solid var(--brown-dark); }
+
+        .choice-badge {
+            width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--off-white);
+            font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; justify-content: center;
+            color: var(--navy-deep); flex-shrink: 0; border: 1px solid var(--border-grey);
+        }
+
+        .choice-text { font-size: 0.9375rem; font-weight: 600; color: var(--navy-deep); text-align: left; line-height: 1.5; }
+
+        .choice-row-button.was-correct { border-color: var(--green-success); background: rgba(46, 125, 50, 0.04); cursor: default; }
+        .choice-row-button.was-correct .choice-badge { background: var(--green-success); color: #FFFFFF; border-color: var(--green-success); }
+
+        .choice-row-button.was-incorrect { border-color: var(--red-error); background: rgba(198, 40, 40, 0.04); cursor: default; }
+        .choice-row-button.was-incorrect .choice-badge { background: var(--red-error); color: #FFFFFF; border-color: var(--red-error); }
+
+        .feedback-explanation { font-size: 0.875rem; font-weight: 500; line-height: 1.5; margin-top: 0.25rem; padding-left: 2.5rem; display: none; }
+        .feedback-explanation.show-feedback { display: block; }
+        .feedback-explanation.is-correct { color: var(--green-success); }
+        .feedback-explanation.is-incorrect { color: var(--red-error); }
+
+        .synthesis-challenge-card {
+            background: #FFFFFF; border: 2px solid var(--navy); border-radius: 0.75rem;
+            padding: 2rem; margin-top: 1rem; display: flex; flex-direction: column; gap: 1.25rem;
+            animation: nodeSlideIn 0.5s var(--bezier) both;
+        }
+
+        .synthesis-card-title { font-size: 1.125rem; font-weight: 900; color: var(--navy-deep); letter-spacing: -0.2px; }
+        .synthesis-card-prompt { font-size: 0.9375rem; font-weight: 500; color: var(--grey-dark); }
+
+        .synthesis-matrix-grid { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem; }
+
+        .matrix-option-label {
+            display: flex; gap: 1rem; align-items: flex-start; padding: 1rem;
+            border: 1px solid var(--border-grey); border-radius: 0.5rem; background: var(--off-white);
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .matrix-option-label:hover { border-color: var(--teal); background: #FFFFFF; }
+
+        .matrix-checkbox { width: 1.25rem; height: 1.25rem; margin-top: 0.125rem; cursor: pointer; flex-shrink: 0; }
+        .matrix-text-content { font-size: 0.9375rem; font-weight: 600; color: var(--navy-deep); line-height: 1.5; }
+
+        .matrix-option-label.checked-correct { border-color: var(--green-success); background: rgba(46, 125, 50, 0.04); }
+        .matrix-option-label.checked-incorrect-hit { border-color: var(--red-error); background: rgba(198, 40, 40, 0.04); }
+        .matrix-option-label.checked-missed { border-color: var(--brown); background: var(--brown-light); }
+
+        .synthesis-submit-btn {
+            align-self: flex-start; padding: 0.875rem 1.75rem; border-radius: 2rem;
+            background: var(--navy); color: var(--white-sub); font-size: 0.875rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: background 0.2s;
+            margin-top: 1rem;
+        }
+        .synthesis-submit-btn:hover { background: var(--navy-deep); }
+        .synthesis-submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .score-report-layout {
+            background: var(--navy-deep); color: #FFFFFF; border-radius: 0.75rem;
+            padding: 2.25rem; display: flex; flex-direction: column; gap: 1.5rem;
+            animation: nodeSlideIn 0.5s var(--bezier) both;
+        }
+        .score-report-layout h2 { font-size: 1.5rem; font-weight: 900; color: var(--white-sub); letter-spacing: -0.3px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem; }
+
+        .report-grid-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center; }
+        .metric-block { background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.1); }
+        .metric-score-val { font-size: 1.75rem; font-weight: 900; color: var(--teal-bright); display: block; }
+        .metric-score-lbl { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--border-grey); }
+
+        .report-narrative-eval { font-size: 1rem; font-weight: 500; line-height: 1.6; color: var(--off-white); }
+
+        .reset-runner-btn {
+            align-self: flex-start; padding: 0.75rem 1.5rem; border-radius: 1.5rem;
+            background: transparent; border: 2px solid var(--white-sub); color: var(--white-sub);
+            font-size: 0.8125rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .reset-runner-btn:hover { background: var(--white-sub); color: var(--navy-deep); }
+
+        .crm-simulation-panel {
+            background: #FFFFFF;
+            border: 1px solid var(--border-grey);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+            height: fit-content;
+            position: sticky; top: 1.5rem;
+        }
+
+        .crm-panel-title { font-size: 0.8125rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: var(--navy); margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem; }
+        .crm-panel-title::before { content: ''; width: 6px; height: 6px; background: var(--brown); border-radius: 50%; }
+
+        .crm-input-group { display: flex; flex-direction: column; gap: 0.375rem; transition: transform 0.2s ease; }
+        .crm-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--grey-dark); letter-spacing: 0.5px; display: flex; justify-content: space-between; }
+
+        .crm-input-wrapper {
+            position: relative; display: flex; align-items: center;
+            border: 2px solid var(--border-grey); border-radius: 0.5rem;
+            background: var(--off-white); transition: all 0.2s ease;
+        }
+        .crm-input-wrapper:focus-within { border-color: var(--navy); background: #FFFFFF; }
+
+        .crm-field { width: 100%; padding: 0.625rem 0.875rem; font-size: 0.9375rem; font-weight: 600; color: var(--navy-deep); }
+        .crm-field:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .crm-input-group.field-highlight { transform: scale(1.02); }
+        .crm-input-group.field-highlight .crm-input-wrapper {
+            border-color: var(--brown);
+            box-shadow: 0 0 0 4px var(--brown-light);
+            background: #FFFFFF;
+        }
+
+        .live-status-pill { font-size: 0.6875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 1px 6px; border-radius: 4px; background: var(--border-grey); color: var(--grey-dark); }
+        .crm-input-group.field-highlight .live-status-pill { background: var(--brown); color: #FFFFFF; animation: heartbeat 1.5s infinite ease-in-out; }
+
+        /* --- CONTINUE BUTTON ROW (Optimize style) --- */
+        .continue-row { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .back-link {
+            font-size: 0.8125rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--grey-dark); text-decoration: underline; text-underline-offset: 3px;
+            display: inline-flex; align-items: center; gap: 0.375rem;
+        }
+        .back-link:hover { color: var(--navy-deep); }
+        .back-link:focus-visible { outline: 3px solid var(--brown-dark); outline-offset: 3px; }
+        .continue-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--navy); color: var(--white-sub);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.875rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+            padding: 0.875rem 1.75rem; border-radius: 0.5rem; text-decoration: none;
+            transition: all 0.2s var(--bezier); box-shadow: 0 4px 12px rgba(44,59,78,0.12);
+        }
+        .continue-btn:hover { background: var(--navy-deep); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .continue-btn:focus-visible { outline: 3px solid var(--brown-dark); outline-offset: 3px; }
+        .continue-btn svg { transition: transform 0.2s var(--bezier); }
+        .continue-btn:hover svg { transform: translateX(3px); }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+
+        @media (max-width: 58rem) {
+            .workspace-layout { grid-template-columns: 1fr; }
+            .console-header { grid-column: span 1; flex-direction: column; align-items: stretch; text-align: center; }
+            .teleprompter-controls { justify-content: center; }
+            .crm-simulation-panel { position: static; }
+            .continue-row { grid-column: span 1; justify-content: center; }
+            .continue-btn { width: 100%; justify-content: center; }
+        }
+
+        @keyframes nodeSlideIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes heartbeat {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="workspace-layout">
+    <div id="screen-announcer" class="sr-only" aria-live="assertive"></div>
+
+    <header class="console-header">
+        <div class="console-meta">
+            <h1>Outreach Script Simulator Assessment</h1>
+            <p>Scenario Simulation: Active Call Validation Engine</p>
+        </div>
+        <div class="teleprompter-controls">
+            <button class="control-btn" id="playBtn" onclick="engageAutoPrompter()" aria-label="Start simulation engine auto-scrolling">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play
+            </button>
+            <button class="control-btn is-active" id="pauseBtn" onclick="disengageAutoPrompter()" aria-label="Pause simulation engine auto-scrolling">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> Pause
+            </button>
+            <label for="speedRate" class="sr-only">Scroll Speed Metric</label>
+            <select class="speed-select" id="speedRate" onchange="adjustVelocity()" title="Adjust prompter tracking speed">
+                <option value="0.3">0.75x Speed</option>
+                <option value="0.6" selected>1.0x Speed</option>
+                <option value="1.1">1.5x Speed</option>
+            </select>
+        </div>
+    </header>
+
+    <main class="teleprompter-viewport" id="prompterBox" onwheel="gestureCatchInterrupt()">
+        <div class="script-track" id="dynamicScriptTrack">
+
+            <div class="speech-node bdr-turn">
+                <span class="speech-speaker">BDR (You)</span>
+                <p class="speech-bubble">"Charles?"</p>
+            </div>
+
+            <div class="speech-node advisor-turn">
+                <span class="speech-speaker">Charles (Advisor)</span>
+                <p class="speech-bubble">"...uh yeah..."</p>
+            </div>
+
+            <div class="speech-node bdr-turn">
+                <span class="speech-speaker">BDR (You)</span>
+                <p class="speech-bubble">"Charles - It's Alex from Optimize Wealth Management..."</p>
+            </div>
+
+            <div class="speech-node advisor-turn">
+                <span class="speech-speaker">Charles (Advisor)</span>
+                <p class="speech-bubble">"...uh ok..."</p>
+            </div>
+
+            <div class="speech-node bdr-turn">
+                <span class="speech-speaker">BDR (You)</span>
+                <p class="speech-bubble">"I'm just following up on the package we mailed out to you about our advisor platform along with a Starbucks gift card, hopefully you got both of those?"</p>
+            </div>
+
+            <div class="speech-node advisor-turn">
+                <span class="speech-speaker">Charles (Advisor)</span>
+                <p class="speech-bubble">"Actually, I checked my mail intake yesterday and I didn't see any package or gift card from an Optimize Wealth layout."</p>
+            </div>
+
+            <div class="junction-container" id="junction-block-1">
+                <span class="junction-title">Objection Decision Point 1: Missing Anchor Packet</span>
+                <div class="choice-btn-stack" role="group" aria-label="Select call path option">
+                    <button class="choice-row-button" onclick="evaluateChoiceSelection(1, 'B', this)">
+                        <span class="choice-badge">A</span>
+                        <span class="choice-text">"Oh, well it was definitely sent by our operations team. Let me check the shipping tracker or send an email to support to see if it got lost in transit. Do you have a few minutes to talk anyway?"</span>
+                    </button>
+                    <button class="choice-row-button" onclick="evaluateChoiceSelection(1, 'A', this)">
+                        <span class="choice-badge">B</span>
+                        <span class="choice-text">"Oh that's odd, the address we mailed it out to was the one listed on your registration details, and so what's the best address to get you out the package?"</span>
+                    </button>
+                </div>
+                <div class="feedback-explanation" id="explanation-1"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <aside class="crm-simulation-panel" aria-label="Simulated CRM Entry Workspace">
+        <div>
+            <h2 class="crm-panel-title">HubSpot CRM Lead Entry</h2>
+            <p style="font-size: 0.8125rem; color: var(--grey-dark); font-weight: 500;">Active Pipeline Target Verification</p>
+        </div>
+
+        <div class="crm-input-group" id="crm-group-experience">
+            <label class="crm-label" for="crm-experience">Years Advising <span class="live-status-pill" id="pill-exp">Awaiting</span></label>
+            <div class="crm-input-wrapper">
+                <input class="crm-field" type="text" id="crm-experience" placeholder="Extract value from conversation..." oninput="verifyCRMFieldCompletion('experience')" disabled>
+            </div>
+        </div>
+
+        <div class="crm-input-group" id="crm-group-assets">
+            <label class="crm-label" for="crm-assets">Current Book Size (AUM) <span class="live-status-pill" id="pill-ast">Awaiting</span></label>
+            <div class="crm-input-wrapper">
+                <input class="crm-field" type="text" id="crm-assets" placeholder="Extract value from conversation..." oninput="verifyCRMFieldCompletion('assets')" disabled>
+            </div>
+        </div>
+
+        <div class="crm-input-group" id="crm-group-email">
+            <label class="crm-label" for="crm-email">Confidential Personal Email <span class="live-status-pill" id="pill-eml">Awaiting</span></label>
+            <div class="crm-input-wrapper">
+                <input class="crm-field" type="email" id="crm-email" placeholder="Extract value from conversation..." oninput="verifyCRMFieldCompletion('email')" disabled>
+            </div>
+        </div>
+
+        <div class="crm-input-group" id="crm-group-phone">
+            <label class="crm-label" for="crm-phone">Mobile Contact Number <span class="live-status-pill" id="pill-phn">Awaiting</span></label>
+            <div class="crm-input-wrapper">
+                <input class="crm-field" type="tel" id="crm-phone" placeholder="Extract value from conversation..." oninput="verifyCRMFieldCompletion('phone')" disabled>
+            </div>
+        </div>
+    </aside>
+
+    <div class="continue-row">
+        <a class="back-link" href="busdev-3-script-runner.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Script Runner</a>
+        <a class="continue-btn" href="index.html">Finish: Back to Case Studies <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+</div>
+
+<script>
+    let prompterFrameAnim = null;
+    let baselineVelocity = 0.6;
+    let isScrollingActive = false;
+
+    let evaluationScoreTracker = { choicesScore: 0, inputsCaptured: 0, synthesisScore: 0 };
+    let crmCompletionStates = { experience: false, assets: false, email: false, phone: false };
+
+    const scrollViewport = document.getElementById('prompterBox');
+    const trackContainer = document.getElementById('dynamicScriptTrack');
+    const systemAnnouncer = document.getElementById('screen-announcer');
+
+    function automatedScrollEngine() {
+        if (!isScrollingActive) return;
+        scrollViewport.scrollTop += baselineVelocity;
+        if (scrollViewport.scrollTop + scrollViewport.clientHeight >= scrollViewport.scrollHeight - 2) {
+            disengageAutoPrompter();
+            return;
+        }
+        prompterFrameAnim = requestAnimationFrame(automatedScrollEngine);
+    }
+
+    function engageAutoPrompter() {
+        if (isScrollingActive) return;
+        isScrollingActive = true;
+        document.getElementById('playBtn').classList.add('is-active');
+        document.getElementById('pauseBtn').classList.remove('is-active');
+        systemAnnouncer.textContent = "Simulation tracking active.";
+        prompterFrameAnim = requestAnimationFrame(automatedScrollEngine);
+    }
+
+    function disengageAutoPrompter() {
+        isScrollingActive = false;
+        if (prompterFrameAnim) cancelAnimationFrame(prompterFrameAnim);
+        document.getElementById('playBtn').classList.remove('is-active');
+        document.getElementById('pauseBtn').classList.add('is-active');
+    }
+
+    function adjustVelocity() {
+        baselineVelocity = parseFloat(document.getElementById('speedRate').value);
+    }
+
+    function gestureCatchInterrupt() {
+        if (isScrollingActive) {
+            disengageAutoPrompter();
+            systemAnnouncer.textContent = "Prompter tracking paused via manual override.";
+        }
+    }
+
+    const conversationSequencerStages = {
+        branch_1_A_recovery: `
+            <div class="speech-node bdr-turn">
+                <span class="speech-speaker">BDR (You)</span>
+                <p class="speech-bubble">"OK Great, we'll get you out a package right away and I'll follow up with you afterwards - makes sense? Great, well Listen, I was hoping to set up a call with you and one of our Managing Directors, to go through our Advisor Platform and the value we can bring to your clients in addition to our 2% Transition Bonus paid on the size of your entire book, our 1% Trailer with a 100% Payout, along with our 5% Succession Payout. And so, how is next Tuesday at 11AM?"</p>
+            </div>
+            <div class="speech-node advisor-turn">
+                <span class="speech-speaker">Charles (Advisor)</span>
+                <p class="speech-bubble">"Well, if you're going to resend the information... I suppose I can check my schedule. What did you say those transition payout parameters were again?"</p>
+            </div>
+            <div class="junction-container" id="junction-block-2">
+                <span class="junction-title">Pivot Decision Point 2: Value Anchor Retain</span>
+                <div class="choice-btn-stack" role="group">
+                    <button class="choice-row-button" onclick="evaluateChoiceSelection(2, 'B', this)">
+                        <span class="choice-badge">A</span>
+                        <span class="choice-text">"It's just an asset platform overview. Does that sound like something you might be interested in exploring further when you have more free time?"</span>
+                    </button>
+                    <button class="choice-row-button" onclick="evaluateChoiceSelection(2, 'A', this)">
+                        <span class="choice-badge">B</span>
+                        <span class="choice-text">"It's a 2% Transition Bonus paid on your entire book size, along with a 1% Trailer with a 100% Payout. How does next Tuesday at 11 AM work for a quick introduction with our Managing Director?"</span>
+                    </button>
+                </div>
+                <div class="feedback-explanation" id="explanation-2"></div>
+            </div>
+        `,
+        branch_1_B_stalled: `
+            <div class="speech-node bdr-turn">
+                <span class="speech-speaker">BDR (You)</span>
+                <p class="speech-bubble">"Oh, well... let's see. I can talk to operations. Do you have a few minutes to talk anyway?"</p>
+            </div>
+            <div class="speech-node advisor-turn">
+                <span class="speech-speaker">Charles (Advisor)</span>
+                <p class="speech-bubble">"I'd really rather see what you sent before setting up any calls. I'm pretty busy today."</p>
+            </div>
+            <div class="junction-container" id="junction-block-2">
+                <span class="junction-title">Pivot Decision Point 2: Recovering the Call Pivot</span>
+                <div class="choice-btn-stack" role="group">
+                    <button class="choice-row-button" onclick="evaluateChoiceSelection(2, 'B', this)">
+                        <span class="choice-badge">A</span>
+                        <span class="choice-text">"I completely understand. I'll email you a placeholder layout instead. Is there a better time next month?"</span>
+                    </button>
+                    <button class="choice-row-button" onclick="evaluateChoiceSelection(2, 'A', this)">
+                        <span class="choice-badge">B</span>
+                        <span class="choice-text">"Completely understand your time constraints, Charles. That's exactly why I want to schedule the introduction out in advance - to highlight our 2% Transition Bonus and 1% Trailer with no tiers. How does next Tuesday at 11 AM work?"</span>
+                    </button>
+                </div>
+                <div class="feedback-explanation" id="explanation-2"></div>
+            </div>
+        `,
+        discovery_sequence: `
+            <div class="speech-node advisor-turn">
+                <span class="speech-speaker">Charles (Advisor)</span>
+                <p class="speech-bubble">"Alright, fine. Tuesday at 11 AM works. Let me just grab my coffee here, one second... ah, that's a good medium roast. Ok, I can block out a brief window on my calendar for that. Fair warning though, they're calling for rain all day Tuesday in my area, so if my reception cuts out that's probably why."</p>
+            </div>
+            <div class="speech-node bdr-turn">
+                <span class="speech-speaker">BDR (You)</span>
+                <p class="speech-bubble">"Fair enough - and in advance of our meeting just wanted to confirm a couple of things. First, it certainly seems as though you've got very good long-term relationships with your clients, and so how many years have you been advising clients?"</p>
+            </div>
+            <div class="speech-node advisor-turn listening-active" id="listen-node-exp">
+                <span class="speech-speaker">Charles (Advisor)</span>
+                <p class="speech-bubble">"I've  been in the game for - geez - 16 years now. Long enough that I'm honestly starting to think about the back end of it. I'm mapping out a five-year exit and winding down toward retirement, so that 5% Succession Payout you mentioned is actually the piece that caught my attention."</p>
+            </div>
+            <div class="speech-node bdr-turn">
+                <span class="speech-speaker">BDR (You)</span>
+                <p class="speech-bubble">"Terrific - and just so my Managing Director is a bit more prepared for the meeting, where does your book size currently stand?"</p>
+            </div>
+            <div class="speech-node advisor-turn listening-active" id="listen-node-assets">
+                <span class="speech-speaker">Charles (Advisor)</span>
+                <p class="speech-bubble">"We are currently sitting right around $85 Million in total AUM... at least across our primary household relationships. And honestly, part of why I'm even taking this call is that my current dealer keeps creeping the grid splits up on me, and the administrative overhead has gotten painful. I'm spending more time on their paperwork than with clients these days."</p>
+            </div>
+            <div class="speech-node bdr-turn">
+                <span class="speech-speaker">BDR (You)</span>
+                <p class="speech-bubble">"Noted - well listen, I'll get you out a booking shortly after this call so that you have it for your calendar, and for confidentiality purposes, what's the best personal email to send that to?"</p>
+            </div>
+            <div class="speech-node advisor-turn listening-active" id="listen-node-email">
+                <span class="speech-speaker">Charles (Advisor)</span>
+                <p class="speech-bubble">"Go ahead and send it over to my personal encrypted folder account: charles.n.tower@personalemail.com. One thing I'll want to understand before we commit to anything, though, is what specialized software support you provide. My biggest worry with any transition is client friction - people getting confused or annoyed when their statements and logins suddenly change. If that part is clean, I'm a lot more comfortable."</p>
+            </div>
+            <div class="speech-node bdr-turn">
+                <span class="speech-speaker">BDR (You)</span>
+                <p class="speech-bubble">"Will do - and in case we need to contact you before the meeting, could you please provide your cell phone number?"</p>
+            </div>
+            <div class="speech-node advisor-turn listening-active" id="listen-node-phone">
+                <span class="speech-speaker">Charles (Advisor)</span>
+                <p class="speech-bubble">"Sure, you can reach me directly on my mobile at 416-868-6937. There's plenty of parking at my building too if anyone ever wants to come by in person - we've got a full underground lot."</p>
+            </div>
+            <div class="speech-node bdr-turn">
+                <span class="speech-speaker">BDR (You)</span>
+                <p class="speech-bubble">"Perfect - well enjoy the rest of your day and we certainly look forward to speaking with you soon."</p>
+            </div>
+            <div class="synthesis-challenge-card" id="synthesisChallengeBlock">
+                <h3 class="synthesis-card-title">Final Synthesis Challenge: Post-Call Note Architecture</h3>
+                <p class="synthesis-card-prompt">Managing Directors also benefit from knowing any other key pieces of information that arose during the call (eg. why the Advisor may or may not be interested in Optimize, specific apprehensions or catalysts). Check which of the following options may be beneficial to include in your Note.</p>
+                <div class="synthesis-matrix-grid">
+                    <label class="matrix-option-label" id="lbl-opt-1"><input type="checkbox" class="matrix-checkbox" value="correct_1"> <span class="matrix-text-content">Advisor noted high current interest in the 5% Succession Payout because they are building a 5-year retirement exit strategy.</span></label>
+                    <label class="matrix-option-label" id="lbl-opt-2"><input type="checkbox" class="matrix-checkbox" value="distractor_1"> <span class="matrix-text-content">Advisor mentioned they drank a medium roast coffee during the morning phone call.</span></label>
+                    <label class="matrix-option-label" id="lbl-opt-3"><input type="checkbox" class="matrix-checkbox" value="correct_2"> <span class="matrix-text-content">Advisor expressed frustration with their current dealer's high grid splits and administrative overhead.</span></label>
+                    <label class="matrix-option-label" id="lbl-opt-4"><input type="checkbox" class="matrix-checkbox" value="distractor_2"> <span class="matrix-text-content">Advisor confirmed their current office building has ample underground parking stalls.</span></label>
+                    <label class="matrix-option-label" id="lbl-opt-5"><input type="checkbox" class="matrix-checkbox" value="correct_3"> <span class="matrix-text-content">Advisor is specifically concerned about client friction during transition and wants to know what specialized software support Optimize provides.</span></label>
+                    <label class="matrix-option-label" id="lbl-opt-6"><input type="checkbox" class="matrix-checkbox" value="distractor_3"> <span class="matrix-text-content">Logged that the advisor's tone of voice register shifted from flat to slightly elevated when succession came up.</span></label>
+                    <label class="matrix-option-label" id="lbl-opt-7"><input type="checkbox" class="matrix-checkbox" value="correct_4"> <span class="matrix-text-content">Advisor seemed open to change.</span></label>
+                    <label class="matrix-option-label" id="lbl-opt-8"><input type="checkbox" class="matrix-checkbox" value="distractor_4"> <span class="matrix-text-content">Advisor noted that Tuesday weather in their region is expected to be rainy.</span></label>
+                </div>
+                <button class="synthesis-submit-btn" id="submitSynthesisBtn" onclick="evaluateSynthesisSubmission()" disabled>Audit &amp; Complete Verification</button>
+            </div>
+        `
+    };
+
+    function evaluateChoiceSelection(junctionId, selectedVariant, elementReference) {
+        const parentBlock = document.getElementById('junction-block-' + junctionId);
+        const choiceButtons = parentBlock.querySelectorAll('.choice-row-button');
+        choiceButtons.forEach(btn => { btn.disabled = true; btn.onclick = null; });
+
+        const feedbackLine = document.getElementById('explanation-' + junctionId);
+        feedbackLine.classList.add('show-feedback');
+
+        if (selectedVariant === 'A') {
+            elementReference.classList.add('was-correct');
+            feedbackLine.classList.add('is-correct');
+            evaluationScoreTracker.choicesScore += 1;
+
+            if (junctionId === 1) {
+                feedbackLine.innerHTML = "<strong>Correct:</strong> Excellent. You converted an operational obstacle into a proactive data-gathering touchpoint while capturing address records.";
+                appendConversationalSegment(conversationSequencerStages.branch_1_A_recovery);
+            } else if (junctionId === 2) {
+                feedbackLine.innerHTML = "<strong>Correct:</strong> Perfect assumptive pivot close. You reiterated concrete value figures and immediately re-proposed a specific time slot.";
+                activateCRMDataCollectionPhase();
+            }
+        } else {
+            elementReference.classList.add('was-incorrect');
+            feedbackLine.classList.add('is-incorrect');
+
+            if (junctionId === 1) {
+                feedbackLine.innerHTML = "<strong>Incorrect:</strong> Getting defensive or offering to email support stalls momentum and fails to use the missing package as a strategic hook.";
+                appendConversationalSegment(conversationSequencerStages.branch_1_B_stalled);
+            } else if (junctionId === 2) {
+                feedbackLine.innerHTML = "<strong>Incorrect:</strong> Shifting into a non-committal permission check breaks call flow and invites rejection.";
+                activateCRMDataCollectionPhase();
+            }
+        }
+
+        setTimeout(() => { parentBlock.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 150);
+    }
+
+    function appendConversationalSegment(htmlPayload) {
+        trackContainer.insertAdjacentHTML('beforeend', htmlPayload);
+        setTimeout(() => engageAutoPrompter(), 800);
+    }
+
+    function activateCRMDataCollectionPhase() {
+        appendConversationalSegment(conversationSequencerStages.discovery_sequence);
+
+        document.getElementById('crm-experience').disabled = false;
+        document.getElementById('crm-assets').disabled = false;
+        document.getElementById('crm-email').disabled = false;
+        document.getElementById('crm-phone').disabled = false;
+
+        document.getElementById('pill-exp').textContent = "Listening";
+        document.getElementById('pill-ast').textContent = "Listening";
+        document.getElementById('pill-eml').textContent = "Listening";
+        document.getElementById('pill-phn').textContent = "Listening";
+
+        setupDynamicScrollIntersectionTrackers();
+    }
+
+    function setupDynamicScrollIntersectionTrackers() {
+        scrollViewport.addEventListener('scroll', () => {
+            const nodes = [
+                { targetId: 'listen-node-exp',    inputGroupId: 'crm-group-experience' },
+                { targetId: 'listen-node-assets',  inputGroupId: 'crm-group-assets' },
+                { targetId: 'listen-node-email',   inputGroupId: 'crm-group-email' },
+                { targetId: 'listen-node-phone',   inputGroupId: 'crm-group-phone' }
+            ];
+
+            nodes.forEach(node => {
+                const domEl = document.getElementById(node.targetId);
+                if (!domEl) return;
+                const bounds = domEl.getBoundingClientRect();
+                const containerBounds = scrollViewport.getBoundingClientRect();
+
+                if (bounds.top >= containerBounds.top && bounds.top <= containerBounds.top + 180) {
+                    document.getElementById(node.inputGroupId).classList.add('field-highlight');
+                } else {
+                    document.getElementById(node.inputGroupId).classList.remove('field-highlight');
+                }
+            });
+        });
+    }
+
+    function verifyCRMFieldCompletion(fieldName) {
+        const value = document.getElementById('crm-' + fieldName).value.trim();
+        const indicatorPill = document.getElementById('pill-' + (fieldName === 'experience' ? 'exp' : fieldName === 'assets' ? 'ast' : fieldName === 'email' ? 'eml' : 'phn'));
+
+        let passed = false;
+        if (fieldName === 'experience' && value.includes('16')) passed = true;
+        if (fieldName === 'assets' && value.toLowerCase().includes('85')) passed = true;
+        if (fieldName === 'email' && value.toLowerCase() === 'charles.n.tower@personalemail.com') passed = true;
+        if (fieldName === 'phone' && value.replace(/\D/g,'') === '4168686937') passed = true;
+
+        if (passed && !crmCompletionStates[fieldName]) {
+            crmCompletionStates[fieldName] = true;
+            indicatorPill.textContent = "Verified";
+            indicatorPill.style.background = "var(--green-success)";
+            indicatorPill.style.color = "#FFFFFF";
+            evaluationScoreTracker.inputsCaptured += 1;
+            checkSynthesisFormUnlockState();
+        }
+    }
+
+    function checkSynthesisFormUnlockState() {
+        const submitBtn = document.getElementById('submitSynthesisBtn');
+        if (submitBtn) submitBtn.disabled = false;
+    }
+
+    function evaluateSynthesisSubmission() {
+        disengageAutoPrompter();
+        const grid = document.getElementById('synthesisChallengeBlock');
+        const checkboxes = grid.querySelectorAll('.matrix-checkbox');
+
+        let correctSelectionsCount = 0;
+        let incorrectSelectionsCount = 0;
+
+        checkboxes.forEach(box => {
+            box.disabled = true;
+            const parentLabel = box.parentElement;
+            const val = box.value;
+            const isChecked = box.checked;
+
+            if (val.startsWith('correct_')) {
+                if (isChecked) {
+                    parentLabel.classList.add('checked-correct');
+                    correctSelectionsCount++;
+                } else {
+                    parentLabel.classList.add('checked-missed');
+                }
+            } else if (val.startsWith('distractor_')) {
+                if (isChecked) {
+                    parentLabel.classList.add('checked-incorrect-hit');
+                    incorrectSelectionsCount++;
+                }
+            }
+        });
+
+        let calculatedSynthesisScore = correctSelectionsCount - incorrectSelectionsCount;
+        evaluationScoreTracker.synthesisScore = Math.max(0, calculatedSynthesisScore);
+
+        document.getElementById('submitSynthesisBtn').style.display = 'none';
+        renderPerformanceEvaluationReport();
+    }
+
+    function renderPerformanceEvaluationReport() {
+        const finalScoreHTML = `
+            <div class="score-report-layout">
+                <h2>Call Simulation Assessment Complete</h2>
+                <div class="report-grid-metrics">
+                    <div class="metric-block">
+                        <span class="metric-score-val">${evaluationScoreTracker.choicesScore} / 2</span>
+                        <span class="metric-score-lbl">Objection Junctions</span>
+                    </div>
+                    <div class="metric-block">
+                        <span class="metric-score-val">${evaluationScoreTracker.inputsCaptured} / 4</span>
+                        <span class="metric-score-lbl">CRM Metadata Fields</span>
+                    </div>
+                    <div class="metric-block">
+                        <span class="metric-score-val">${evaluationScoreTracker.synthesisScore} / 4</span>
+                        <span class="metric-score-lbl">Synthesis Selectors</span>
+                    </div>
+                </div>
+                <p class="report-narrative-eval" id="reportSummaryBox"></p>
+                <button class="reset-runner-btn" onclick="window.location.reload()">Reset &amp; Retry Simulation</button>
+            </div>
+        `;
+
+        trackContainer.insertAdjacentHTML('beforeend', finalScoreHTML);
+
+        const summaryTextElement = document.getElementById('reportSummaryBox');
+        let totalSum = evaluationScoreTracker.choicesScore + evaluationScoreTracker.inputsCaptured + evaluationScoreTracker.synthesisScore;
+
+        if (totalSum === 10) {
+            summaryTextElement.innerHTML = '<strong>Performance Tier: Elite Execution (10/10)</strong><br>Perfect score. You handled both objections cleanly, captured all CRM fields accurately, and isolated the right strategic variables for the Managing Director\'s briefing.';
+        } else if (totalSum >= 7) {
+            summaryTextElement.innerHTML = `<strong>Performance Tier: Proficient Handoff (${totalSum}/10)</strong><br>Solid performance. A few metadata inputs or synthesis selections missed the mark. Review the flagged items and run through the simulation again.`;
+        } else {
+            summaryTextElement.innerHTML = `<strong>Performance Tier: Retraining Required (${totalSum}/10)</strong><br>Your results fell below baseline. Focus on capturing CRM fields accurately during the discovery sequence and distinguishing strategic intel from irrelevant detail.`;
+        }
+
+        setTimeout(() => { summaryTextElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 200);
+    }
+</script>
+
+</body>
+</html>

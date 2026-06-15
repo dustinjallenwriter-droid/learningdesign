@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Protocol — Advisor Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --cream: #FFF8EC; --cream-2: #FFF3E0; --cream-3: #F6E9D4;
+            --ink: #1F1A14; --muted: #5E564E; --line: #E6DCCF;
+            --purple-deep: #3B1C55; --lavender-mid: #CBB7EE; --lavender-soft: #E7DFF7;
+            --periwinkle: #90B6E8; --clay: #C1654A; --clay-light: #F7E6E0;
+            --bezier: cubic-bezier(0.23, 1, 0.32, 1);
+            --font-display: 'Cooper Black', 'Playfair Display', serif;
+            --font-heading: 'Josefin Sans', sans-serif;
+            --font-body: "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-body); font-weight: 300; background: var(--cream); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; }
+        .shell { max-width: 900px; margin: 0 auto; width: 100%; }
+        a:focus-visible, button:focus-visible { outline: 3px solid var(--purple-deep); outline-offset: 3px; border-radius: 4px; }
+
+        header { padding: 56px 64px 24px; }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--purple-deep); text-decoration: underline; text-decoration-color: var(--periwinkle); text-decoration-thickness: 2px; text-underline-offset: 4px; margin-bottom: 28px; opacity: 0; animation: fadeUp .6s var(--bezier) 0s both; }
+        .back-link:hover, .back-link:focus-visible { text-decoration-color: var(--purple-deep); }
+        .eyebrow { font-family: var(--font-heading); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: var(--purple-deep); display: flex; align-items: center; gap: 12px; margin-bottom: 18px; opacity: 0; animation: fadeUp .6s var(--bezier) .1s both; }
+        .eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--purple-deep); }
+        h1 { font-family: var(--font-display); font-size: clamp(30px, 4.5vw, 46px); font-weight: 900; line-height: 1.1; letter-spacing: -0.5px; color: var(--purple-deep); margin-bottom: 14px; opacity: 0; animation: fadeUp .7s var(--bezier) .2s both; }
+        h1 span { display: block; font-family: var(--font-heading); color: var(--muted); font-size: 0.42em; font-weight: 700; margin-top: 10px; }
+        .lede { font-size: 17px; line-height: 1.7; max-width: 680px; opacity: 0; animation: fadeUp .7s var(--bezier) .3s both; }
+        .lede strong { font-weight: 600; }
+
+        main { padding: 8px 64px 48px; flex: 1; }
+
+        .guidelines { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 28px 0; }
+        .guide-col { background: var(--cream-2); border: 1px solid var(--line); border-radius: 12px; padding: 22px; }
+        .guide-title { font-family: var(--font-heading); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; display: block; }
+        .guide-title.remove { color: var(--clay); }
+        .guide-title.keep { color: var(--purple-deep); }
+        .check-item { display: flex; gap: 10px; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--ink); align-items: flex-start; }
+        .check-item:last-child { margin-bottom: 0; }
+        .check-item svg { flex-shrink: 0; margin-top: 2px; }
+
+        .demo-toggle-row { display: flex; justify-content: center; margin: 28px 0; }
+        .action-btn { display: inline-flex; align-items: center; gap: 9px; background: var(--purple-deep); color: var(--cream); padding: 14px 32px; border-radius: 7px; font-family: var(--font-heading); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border: none; cursor: pointer; transition: all .3s var(--bezier); box-shadow: 0 6px 18px rgba(59,28,85,.14); }
+        .action-btn:hover { background: var(--lavender-mid); color: var(--purple-deep); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(59,28,85,.22); }
+        .action-btn.active { background: var(--clay); }
+        .action-btn.active:hover { background: var(--clay); opacity: .85; color: var(--cream); transform: none; box-shadow: 0 6px 18px rgba(59,28,85,.14); }
+
+        .statement-frame { background: var(--cream); border: 1px solid var(--line); border-radius: 14px; padding: 36px; box-shadow: 0 10px 30px rgba(59,28,85,.05); }
+        .st-header { display: flex; justify-content: space-between; margin-bottom: 32px; border-bottom: 1px solid var(--line); padding-bottom: 20px; }
+        .st-logo { font-family: var(--font-heading); font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .st-logo-icon { width: 32px; height: 32px; background: var(--purple-deep); color: var(--cream); display: flex; align-items: center; justify-content: center; border-radius: 6px; font-family: var(--font-heading); font-weight: 700; flex-shrink: 0; }
+        .st-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; display: block; letter-spacing: .5px; }
+        .st-val { font-weight: 600; font-size: 14px; }
+        .st-client-info { margin-bottom: 32px; line-height: 1.6; }
+        .st-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 28px; }
+        .st-section { border-top: 1px solid var(--line); padding-top: 20px; margin-bottom: 24px; }
+        .st-section:last-child { margin-bottom: 0; }
+        .big-number { font-family: var(--font-display); font-size: 26px; font-weight: 900; color: var(--purple-deep); margin-top: 6px; }
+
+        .redact-bar { position: relative; display: inline-block; }
+        .redact-bar::after { content: ''; position: absolute; top: -2px; left: -4px; right: -4px; bottom: -2px; background: var(--ink); border-radius: 3px; opacity: 0; transform: scaleX(0); transform-origin: left; transition: all .5s var(--bezier); pointer-events: none; }
+        .redacted .redact-bar::after { opacity: 1; transform: scaleX(1); }
+
+        .continue-row { display: flex; justify-content: center; margin-top: 40px; }
+        .case-btn { display: inline-flex; align-items: center; gap: 9px; background-color: var(--purple-deep); color: var(--cream); padding: 14px 32px; border-radius: 7px; font-family: var(--font-heading); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; transition: all .3s var(--bezier); box-shadow: 0 6px 18px rgba(59,28,85,.14); }
+        .case-btn:hover { background-color: var(--lavender-mid); color: var(--purple-deep); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(59,28,85,.22); }
+        .case-btn .arrow { transition: transform .3s var(--bezier); }
+        .case-btn:hover .arrow { transform: translateX(4px); }
+
+        footer { border-top: 1px solid var(--line); padding: 28px 64px; max-width: 900px; margin: 40px auto 0; width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .footer-name { font-family: var(--font-display); font-size: 15px; color: var(--purple-deep); opacity: .7; }
+        .footer-link { font-family: var(--font-heading); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--purple-deep); text-decoration: underline; text-decoration-color: var(--periwinkle); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+        .footer-link:hover { text-decoration-color: var(--purple-deep); }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            header { padding: 40px 24px 16px; }
+            main { padding: 8px 24px 32px; }
+            footer { padding: 24px; }
+            .guidelines { grid-template-columns: 1fr; }
+            .st-grid { grid-template-columns: 1fr; gap: 20px; }
+            .statement-frame { padding: 24px 20px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+            html { scroll-behavior: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="shell">
+        <a class="back-link" href="academy-2-tax-map.html">← Tax Map Assessment</a>
+        <div class="eyebrow">Advisor Academy · Exercise 3 of 4</div>
+        <h1>Privacy Protocol<span>Secure client submissions</span></h1>
+        <p class="lede">Mishandling personally identifying information (PII) is a compliance breach. <strong>Click "Apply Redaction Standard"</strong> to see the Optimize standard applied to a sample statement, before you're tested on it in the next step.</p>
+    </header>
+
+    <main class="shell">
+        <div class="guidelines">
+            <div class="guide-col">
+                <span class="guide-title remove">Remove PII</span>
+                <div class="check-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg>Name</div>
+                <div class="check-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg>Address</div>
+                <div class="check-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg>Account Number</div>
+            </div>
+            <div class="guide-col">
+                <span class="guide-title keep">Leave Visible</span>
+                <div class="check-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Firm name &amp; division</div>
+                <div class="check-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>General account structure</div>
+                <div class="check-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Security holdings &amp; asset mix</div>
+                <div class="check-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Activity summary</div>
+            </div>
+        </div>
+
+        <div class="demo-toggle-row">
+            <button class="action-btn" type="button" id="redactBtn" onclick="toggleRedaction()">Apply Redaction Standard</button>
+        </div>
+
+        <div class="statement-frame" id="statement">
+            <div class="st-header">
+                <div class="st-logo">
+                    <div class="st-logo-icon">S</div>
+                    <div style="display:flex; flex-direction:column;">
+                        <span>SKYDOME FINANCIAL</span>
+                        <span style="font-size:11px; font-weight:600; color:var(--muted); letter-spacing:1px; margin-top:2px;">Private Wealth Division</span>
+                    </div>
+                </div>
+                <div style="text-align:right">
+                    <span class="st-label">Statement Period</span>
+                    <span class="st-val">July 1 – Sept 30, 2025</span>
+                </div>
+            </div>
+
+            <div class="st-client-info">
+                <span class="st-label">Prepared For</span>
+                <div class="redact-bar"><span class="st-val">Charles N. Tower</span></div><br>
+                <div class="redact-bar"><span>290 Bremner Blvd,</span></div><br>
+                <div class="redact-bar"><span>Toronto, ON&nbsp; M5V 3L9</span></div>
+            </div>
+
+            <div class="st-grid">
+                <div>
+                    <span class="st-label">Account Structure</span>
+                    <span class="st-val">Non-Registered Individual</span>
+                </div>
+                <div style="text-align:right">
+                    <span class="st-label">Account Number</span>
+                    <div class="redact-bar"><span class="st-val">99-842-1105</span></div>
+                </div>
+            </div>
+
+            <div class="st-section">
+                <span class="st-label">Total Portfolio Value</span>
+                <div class="big-number">$1,245,670.12</div>
+            </div>
+
+            <div class="st-section">
+                <span class="st-label">Security Holdings &amp; Asset Mix</span>
+                <div style="display:flex; gap:24px; margin-top:18px; align-items:center; flex-wrap:wrap;">
+                    <div style="width:100px; height:100px; border-radius:50%; background:conic-gradient(var(--purple-deep) 0% 85%, var(--lavender-mid) 85% 95%, var(--clay) 95% 100%); flex-shrink:0;"></div>
+                    <div style="flex:1; min-width:200px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:14px;"><span style="font-weight:600;">85% Equities</span><span class="st-val">$1,058,819.60</span></div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:14px;"><span style="font-weight:600;">10% Fixed Income</span><span class="st-val">$124,567.01</span></div>
+                        <div style="display:flex; justify-content:space-between; font-size:14px;"><span style="font-weight:600;">5% Cash</span><span class="st-val">$62,283.51</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="st-section">
+                <span class="st-label">Activity Summary (CAD)</span>
+                <table style="width:100%; border-collapse:collapse; margin-top:14px; font-size:14px;">
+                    <tr style="border-bottom:1px solid var(--line);"><td style="padding:10px 0;">Opening Value</td><td style="text-align:right;" class="st-val">$1,102,400.00</td></tr>
+                    <tr style="border-bottom:1px solid var(--line);"><td style="padding:10px 0;">Net Contributions</td><td style="text-align:right;" class="st-val">$15,000.00</td></tr>
+                    <tr style="border-bottom:1px solid var(--line);"><td style="padding:10px 0;">Change in Value</td><td style="text-align:right;" class="st-val">$128,270.12</td></tr>
+                    <tr><td style="padding:10px 0; font-weight:700;">Closing Value</td><td style="text-align:right;" class="st-val">$1,245,670.12</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="continue-row">
+            <a class="case-btn" href="academy-4-redaction-check.html">Continue: Knowledge Check <span class="arrow">→</span></a>
+        </div>
+    </main>
+
+    <footer>
+        <span class="footer-name">Dustin J. Allen</span>
+        <a class="footer-link" href="index.html">All Case Studies →</a>
+    </footer>
+
+    <script>
+        function toggleRedaction() {
+            const statement = document.getElementById('statement');
+            const btn = document.getElementById('redactBtn');
+            statement.classList.toggle('redacted');
+            if (statement.classList.contains('redacted')) {
+                btn.textContent = 'Reset Statement';
+                btn.classList.add('active');
+            } else {
+                btn.textContent = 'Apply Redaction Standard';
+                btn.classList.remove('active');
+            }
+        }
+    </script>
+
+</body>
+</html>

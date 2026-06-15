@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Takeaways: BDR Strategy Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- REQUIRED CSS RESET --- */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        button { font-family: inherit; font-size: inherit; font-weight: inherit; color: inherit; line-height: inherit; background: none; border: none; outline: none; text-align: left; cursor: pointer; }
+
+        html {
+            font-size: 15px; /* Compact internal operations typography footprint */
+        }
+
+        :root {
+            --navy: #2C3B4E;
+            --navy-deep: #1E2A38;
+            --teal: #5E8081;
+            --teal-dark: #233637;   /* WCAG AAA Pass: 9.3:1 contrast on white */
+            --teal-light: rgba(94, 128, 129, 0.08);
+            --brown: #AE5605;
+            --brown-dark: #703502;  /* WCAG AAA Pass: 8.7:1 contrast on white */
+            --brown-light: rgba(174, 86, 5, 0.06);
+            --border-grey: #CBD5E1;
+            --white-sub: #FDFCF7;
+            --off-white: #F3F2EB;
+            --grey-dark: #475569;   /* WCAG AA Pass text contrast */
+            --bezier: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--off-white);
+            color: var(--navy);
+            display: flex; 
+            justify-content: center;
+            padding: 2.5rem 1.5rem; 
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        .container { width: 100%; max-width: 48rem; display: flex; flex-direction: column; gap: 1rem; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+
+        /* --- CARD FRAME CONTAINER --- */
+        .kt-container-card {
+            background: var(--white-sub);
+            border: 1px solid rgba(203, 213, 225, 0.6);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 32px rgba(44, 59, 78, 0.03);
+        }
+
+        /* Top Brand Frame Accent */
+        .kt-container-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 0.375rem;
+            background: linear-gradient(90deg, var(--teal), var(--brown));
+        }
+
+        .kt-header { margin-bottom: 2rem; }
+        .kt-label {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+            color: var(--teal-dark); margin-bottom: 0.75rem;
+        }
+        .kt-label::before { content: ''; width: 1rem; height: 2px; background: var(--teal-dark); }
+        .kt-header h1 { font-size: 1.75rem; font-weight: 900; color: var(--navy-deep); letter-spacing: -0.5px; }
+
+        /* --- CATEGORY SECTION HEADER --- */
+        .kt-section-divider {
+            font-size: 0.8125rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--grey-dark); display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0 1rem 0;
+        }
+        .kt-section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-grey); opacity: 0.6; }
+
+        /* --- RISING CONTENT CARD ENGINE --- */
+        .kt-accordion-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+        
+        .kt-item {
+            background: #FFFFFF;
+            border: 1px solid var(--border-grey);
+            border-radius: 0.625rem;
+            overflow: hidden;
+            transition: transform 0.3s var(--bezier), border-color 0.25s var(--bezier), box-shadow 0.3s var(--bezier);
+        }
+        .kt-item:hover { border-color: var(--teal); transform: translateY(-2px); }
+        .kt-item.is-active { border-color: var(--navy); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(44, 59, 78, 0.05); }
+
+        /* Trigger Header Box */
+        .kt-trigger {
+            width: 100%; padding: 1.125rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center; gap: 1.25rem;
+        }
+        .kt-trigger:focus-visible { outline: 3px solid var(--brown-dark); outline-offset: -4px; }
+
+        .kt-title-area { display: flex; align-items: center; gap: 1rem; }
+        
+        .kt-icon-box {
+            width: 2.25rem; height: 2.25rem; border-radius: 0.5rem;
+            background: var(--off-white); color: var(--navy);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            transition: background 0.25s, color 0.25s;
+        }
+        .kt-icon-box svg { width: 1.25rem; height: 1.25rem; stroke-width: 2.3; }
+        .kt-item.is-active .kt-icon-box { background: var(--teal-light); color: var(--teal-dark); }
+
+        .kt-trigger h2 { font-size: 1.0625rem; font-weight: 800; color: var(--navy-deep); letter-spacing: -0.1px; }
+
+        .kt-chevron-icon { color: var(--grey-dark); flex-shrink: 0; transition: transform 0.35s var(--bezier); }
+        .kt-item.is-active .kt-chevron-icon { transform: rotate(180deg); color: var(--navy-deep); }
+
+        /* Progressive Hidden Content Body Box */
+        .kt-content-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s var(--bezier); }
+        .kt-item.is-active .kt-content-wrapper { max-height: 40rem; }
+
+        .kt-content-inner {
+            padding: 0 1.5rem 1.5rem 4.5rem;
+            border-top: 1px solid var(--off-white);
+            padding-top: 1rem;
+        }
+
+        .kt-paragraph { font-size: 0.9375rem; font-weight: 500; color: var(--navy); margin-bottom: 0.875rem; }
+        .kt-paragraph:last-child { margin-bottom: 0; }
+
+        /* Nested High Contrast Checklists */
+        .kt-nested-list { list-style: none; margin: 0.5rem 0 1rem 0; display: flex; flex-direction: column; gap: 0.5rem; }
+        .kt-nested-list li { position: relative; padding-left: 1.5rem; font-size: 0.9375rem; font-weight: 600; color: var(--navy-deep); }
+        .kt-nested-list li::before { content: "\2713"; position: absolute; left: 0; top: 0; font-weight: 900; color: var(--teal-dark); }
+
+        /* Explanatory Mapping Lists */
+        .kt-mapping-list { list-style: none; margin: 0.75rem 0 1.25rem 0; display: flex; flex-direction: column; gap: 0.5rem; }
+        .kt-mapping-row {
+            display: flex; flex-direction: column; padding: 0.75rem 1rem;
+            background: var(--off-white); border-left: 4px solid var(--teal); border-radius: 0 0.375rem 0.375rem 0;
+        }
+        .kt-mapping-label { font-size: 0.9375rem; font-weight: 700; color: var(--navy-deep); }
+        .kt-mapping-value { font-size: 0.875rem; font-weight: 500; color: var(--grey-dark); margin-top: 0.125rem; }
+
+        /* Data Value Grid Badges */
+        .kt-value-badge-grid { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.75rem 0 1.25rem 0; }
+        .kt-badge-row {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 1rem;
+            background: var(--off-white); border-left: 4px solid var(--teal); border-radius: 0 0.375rem 0.375rem 0;
+            font-size: 0.9375rem; font-weight: 600; color: var(--navy-deep);
+        }
+        .kt-badge-row strong { color: var(--teal-dark); font-weight: 800; font-size: 1.0625rem; }
+
+        /* Quotes/Instructions Highlights */
+        .kt-quote-highlight {
+            background: var(--brown-light); border-left: 4px solid var(--brown);
+            padding: 1rem 1.25rem; border-radius: 0.25rem; margin: 0.75rem 0;
+            font-size: 0.9375rem; font-weight: 700; color: var(--brown-dark); line-height: 1.5;
+        }
+
+        /* --- CONTINUE BUTTON ROW (Optimize style) --- */
+        .continue-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .back-link {
+            font-size: 0.8125rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--grey-dark); text-decoration: underline; text-underline-offset: 3px;
+            display: inline-flex; align-items: center; gap: 0.375rem;
+        }
+        .back-link:hover { color: var(--navy-deep); }
+        .back-link:focus-visible { outline: 3px solid var(--brown-dark); outline-offset: 3px; }
+        .continue-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--navy); color: var(--white-sub);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.875rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+            padding: 0.875rem 1.75rem; border-radius: 0.5rem; text-decoration: none;
+            transition: all 0.2s var(--bezier); box-shadow: 0 4px 12px rgba(44,59,78,0.12);
+        }
+        .continue-btn:hover { background: var(--navy-deep); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .continue-btn:focus-visible { outline: 3px solid var(--brown-dark); outline-offset: 3px; }
+        .continue-btn svg { transition: transform 0.2s var(--bezier); }
+        .continue-btn:hover svg { transform: translateX(3px); }
+
+        @media (max-width: 40rem) {
+            .kt-container-card { padding: 2rem 1.25rem; }
+            .kt-content-inner { padding-left: 1.5rem; }
+            .kt-trigger { padding: 1rem; }
+            .kt-icon-box { display: none; }
+            .continue-row { justify-content: center; }
+            .continue-btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="kt-screen-announcer" class="sr-only" aria-live="polite"></div>
+
+    <article class="kt-container-card" aria-labelledby="kt-main-title">
+        
+        <header class="kt-header">
+            <span class="kt-label">BDR Onboarding</span>
+            <h1 id="kt-main-title">Execution Playbook Takeaways</h1>
+        </header>
+
+        <main>
+            <div class="kt-section-divider">Phase 1: Keep in mind&hellip;</div>
+            <ul class="kt-accordion-list" role="list">
+                
+                <li class="kt-item is-active" id="kt-block-1">
+                    <button class="kt-trigger" id="btn-1" aria-expanded="true" aria-controls="box-1" onclick="toggleTakeawayBlock(1)">
+                        <div class="kt-title-area">
+                            <div class="kt-icon-box" aria-hidden="true">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            </div>
+                            <h2>Use the Email salutation, not just the first name</h2>
+                        </div>
+                        <svg class="kt-chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="kt-content-wrapper" id="box-1" role="region" aria-labelledby="btn-1">
+                        <div class="kt-content-inner">
+                            <p class="kt-paragraph">Before you dial, check the Email Salutation field in the CRM. A "Charles" might go by "Chuck," or a "Samuel" by "Sam." Using their preferred name shows:</p>
+                            <ul class="kt-nested-list">
+                                <li>You've done your homework</li>
+                                <li>This isn't a generic bulk call</li>
+                                <li>You see them as an individual, not just a lead</li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="kt-item" id="kt-block-2">
+                    <button class="kt-trigger" id="btn-2" aria-expanded="false" aria-controls="box-2" onclick="toggleTakeawayBlock(2)">
+                        <div class="kt-title-area">
+                            <div class="kt-icon-box" aria-hidden="true">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                            </div>
+                            <h2>You're following up, not cold calling</h2>
+                        </div>
+                        <svg class="kt-chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="kt-content-wrapper" id="box-2" role="region" aria-labelledby="btn-2">
+                        <div class="kt-content-inner">
+                            <p class="kt-paragraph">The package gives you a conversational anchor. This means:</p>
+                            <ul class="kt-nested-list">
+                                <li>They're already familiar with Optimize</li>
+                                <li>They may even be curious, appreciative, or intrigued</li>
+                                <li>You have instant credibility as a follow-up caller</li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="kt-item" id="kt-block-3">
+                    <button class="kt-trigger" id="btn-3" aria-expanded="false" aria-controls="box-3" onclick="toggleTakeawayBlock(3)">
+                        <div class="kt-title-area">
+                            <div class="kt-icon-box" aria-hidden="true">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            </div>
+                            <h2>If they didn't get the package, don't panic</h2>
+                        </div>
+                        <svg class="kt-chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="kt-content-wrapper" id="box-3" role="region" aria-labelledby="btn-3">
+                        <div class="kt-content-inner">
+                            <div class="kt-quote-highlight">
+                                &ldquo;Oh that's odd, the address we mailed it out to was [USE THE CRM ADDRESS]&mdash;and so what's the best address to get you out the package?&rdquo;
+                            </div>
+                            <p class="kt-paragraph">This response turns a negative into an opportunity by keeping you helpful and defensive-free. It extends the conversation by gathering new info and creates a concrete future touchpoint: <em>&ldquo;We'll get you out a package right away and I'll follow up with you afterwards.&rdquo;</em></p>
+                            <p class="kt-paragraph" style="font-weight: 600;">You've just bought yourself another call attempt while positioning yourself as service-oriented.</p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="kt-section-divider">Phase 2: The Pitch / The Pivot</div>
+            <ul class="kt-accordion-list" role="list">
+                
+                <li class="kt-item" id="kt-block-4">
+                    <button class="kt-trigger" id="btn-4" aria-expanded="false" aria-controls="box-4" onclick="toggleTakeawayBlock(4)">
+                        <div class="kt-title-area">
+                            <div class="kt-icon-box" aria-hidden="true">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2"/></svg>
+                            </div>
+                            <h2>Lead with value specifics</h2>
+                        </div>
+                        <svg class="kt-chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="kt-content-wrapper" id="box-4" role="region" aria-labelledby="btn-4">
+                        <div class="kt-content-inner">
+                            <p class="kt-paragraph">Notice the script doesn't say "explore opportunities" or "discuss our platform." It immediately highlights concrete financial benefits that Advisors can instantly calculate against their own book size:</p>
+                            <div class="kt-value-badge-grid">
+                                <div class="kt-badge-row"><strong>2%</strong> Transition Bonus (paid on entire book)</div>
+                                <div class="kt-badge-row"><strong>1%</strong> Trailer with 100% Payout (no grid tiers)</div>
+                                <div class="kt-badge-row"><strong>5%</strong> Succession Payout Guarantee</div>
+                            </div>
+                            <p class="kt-paragraph">Instead of offering abstract promises, these are specific, actionable performance metrics that establish value in the opening 30 seconds of the call.</p>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="kt-item" id="kt-block-5">
+                    <button class="kt-trigger" id="btn-5" aria-expanded="false" aria-controls="box-5" onclick="toggleTakeawayBlock(5)">
+                        <div class="kt-title-area">
+                            <div class="kt-icon-box" aria-hidden="true">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <h2>Pivot immediately to scheduling</h2>
+                        </div>
+                        <svg class="kt-chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="kt-content-wrapper" id="box-5" role="region" aria-labelledby="btn-5">
+                        <div class="kt-content-inner">
+                            <p class="kt-paragraph">After delivering the value proposition, the script doesn't linger or ask "Does that sound interesting?" Instead, it moves straight to an assumptive close:</p>
+                            <div class="kt-quote-highlight">
+                                "And so, how is next Tuesday at 11AM?"
+                            </div>
+                            <p class="kt-paragraph">You're asking <strong>when</strong> (not if) they want to meet. This creates immediate forward momentum and lowers the psychological barrier for them to say yes.</p>
+                            <p class="kt-paragraph" style="font-weight: 600; color: var(--navy-deep);">Core Skill Rule: You'll see this pattern throughout every script and FAQ response. No matter what objection you handle or question you answer, you always pivot back to proposing a specific meeting time. Every conversation path must end with an attempt to book.</p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="kt-section-divider">Phase 3: Closing the call / INFO GATHERING</div>
+            <ul class="kt-accordion-list" role="list">
+                
+                <li class="kt-item" id="kt-block-6">
+                    <button class="kt-trigger" id="btn-6" aria-expanded="false" aria-controls="box-6" onclick="toggleTakeawayBlock(6)">
+                        <div class="kt-title-area">
+                            <div class="kt-icon-box" aria-hidden="true">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                            </div>
+                            <h2>Gathering information</h2>
+                        </div>
+                        <svg class="kt-chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="kt-content-wrapper" id="box-6" role="region" aria-labelledby="btn-6">
+                        <div class="kt-content-inner">
+                            <p class="kt-paragraph">You wrap up the call by gathering four crucial pieces of information for the Meeting Booked Playbook so the Managing Director, Corporate Development can prepare effectively:</p>
+                            <div class="kt-mapping-list">
+                                <div class="kt-mapping-row">
+                                    <span class="kt-mapping-label">Years advising clients</span>
+                                    <span class="kt-mapping-value">&rarr; Experience level and client relationship depth</span>
+                                </div>
+                                <div class="kt-mapping-row">
+                                    <span class="kt-mapping-label">Book size (AUM)</span>
+                                    <span class="kt-mapping-value">&rarr; Determines which MD is assigned to the meeting</span>
+                                </div>
+                                <div class="kt-mapping-row">
+                                    <span class="kt-mapping-label">Personal email</span>
+                                    <span class="kt-mapping-value">&rarr; Creates the confidential calendar invite</span>
+                                </div>
+                                <div class="kt-mapping-row">
+                                    <span class="kt-mapping-label">Cell phone number</span>
+                                    <span class="kt-mapping-value">&rarr; Enables pre-meeting confirmation and follow-up</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="kt-item" id="kt-block-7">
+                    <button class="kt-trigger" id="btn-7" aria-expanded="false" aria-controls="box-7" onclick="toggleTakeawayBlock(7)">
+                        <div class="kt-title-area">
+                            <div class="kt-icon-box" aria-hidden="true">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <h2>Value-driven discovery framing</h2>
+                        </div>
+                        <svg class="kt-chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="kt-content-wrapper" id="box-7" role="region" aria-labelledby="btn-7">
+                        <div class="kt-content-inner">
+                            <p class="kt-paragraph">Each question is framed explicitly to benefit the Advisor rather than sounding like an aggressive interrogation. Use context-driven value justification anchors during data capture:</p>
+                            <ul class="kt-nested-list">
+                                <li><strong>"so my Managing Director is prepared..."</strong> (Positions qualification as strategic custom briefing prep)</li>
+                                <li><strong>"for confidentiality purposes..."</strong> (Transforms a high-friction data request into an intentional security precaution)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </main>
+
+    </article>
+
+    <div class="continue-row">
+        <a class="back-link" href="busdev2.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Intro</a>
+        <a class="continue-btn" href="busdev4.html">Continue: Script Runner <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+</div>
+
+<script>
+    function toggleTakeawayBlock(targetIndex) {
+        const totalBlocks = 7;
+        const announcer = document.getElementById('kt-screen-announcer');
+
+        for (let i = 1; i <= totalBlocks; i++) {
+            const item = document.getElementById('kt-block-' + i);
+            const trigger = document.getElementById('btn-' + i);
+
+            if (i === targetIndex) {
+                const isCurrentlyActive = item.classList.contains('is-active');
+                
+                if (isCurrentlyActive) {
+                    item.classList.remove('is-active');
+                    trigger.setAttribute('aria-expanded', 'false');
+                    announcer.textContent = "Collapsed block: " + trigger.innerText;
+                } else {
+                    item.classList.add('is-active');
+                    trigger.setAttribute('aria-expanded', 'true');
+                    announcer.textContent = "Expanded block: " + trigger.innerText;
+                }
+            } else {
+                item.classList.remove('is-active');
+                document.getElementById('btn-' + i).setAttribute('aria-expanded', 'false');
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
